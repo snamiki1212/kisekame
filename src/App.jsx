@@ -538,15 +538,25 @@ export default function App() {
             <h2 id="info-modal-title">{t(`${infoPage}Title`)}</h2>
             {infoPage === "about" && <>
               <p>{t("aboutBody")}</p>
-              <div className={styles.infoCallout}><strong>{t("aboutStrong")}</strong><span>{t("aboutCallout")}</span></div>
-              <div className={styles.nameOrigin}><strong>{t("nameOriginTitle")}</strong><span>{t("nameOriginBody")}</span></div>
+              <div className={styles.infoCallout}>
+                <span className={styles.aboutIcon} aria-hidden="true">🎁</span>
+                <div><strong>{t("aboutStrong")}</strong><span>{t("aboutCallout")}</span></div>
+              </div>
+              <div className={styles.nameOrigin}>
+                <span className={styles.aboutIcon} aria-hidden="true">💡</span>
+                <div><strong>{t("nameOriginTitle")}</strong><span>{t("nameOriginBody")}</span></div>
+              </div>
+              <div className={styles.ossCard}>
+                <span className={styles.aboutIcon} aria-hidden="true">🧩</span>
+                <div><strong>{t("ossTitle")}</strong><span>{t("ossBody")}</span></div>
+                <a href="https://github.com/snamiki1212/kisekame" target="_blank" rel="noreferrer">{t("repository")} ↗</a>
+              </div>
               <div className={styles.creatorCard}>
-                <img src="/snamiki1212-avatar.jpg" alt="snamiki1212" />
+                <img src={`${import.meta.env.BASE_URL}snamiki1212-avatar.jpg`} alt="snamiki1212" />
                 <div><span>{t("creator")}</span><strong>snamiki1212</strong></div>
                 <div className={styles.creatorLinks}>
                   <a href="https://github.com/snamiki1212" target="_blank" rel="noreferrer">{t("github")} ↗</a>
                   <a href="https://twitter.com/snamiki1212" target="_blank" rel="noreferrer">{t("twitter")} ↗</a>
-                  <a href="https://github.com/snamiki1212/digicam-skin-designer" target="_blank" rel="noreferrer">{t("repository")} ↗</a>
                 </div>
               </div>
             </>}
@@ -578,7 +588,7 @@ export default function App() {
             {infoPage === "guide" && <section className={styles.guidePrintSection}>
               <h3>{t("guidePrintTitle")}</h3>
               <p>{t("printBody")}</p>
-              <div className={styles.printTips}><span>{t("printTip1", { paper: paperSize.label })}</span><span>{t("printTip2")}</span><span>{t("printTip3")}</span><span>{t("printTip4")}</span></div>
+              <div className={styles.printTips}><span>{t("printTip1")}</span><span>{t("printTip2")}</span><span>{t("printTip3")}</span><span>{t("printTip4")}</span></div>
             </section>}
           </div>
           <div className={styles.infoModalFooter}>
