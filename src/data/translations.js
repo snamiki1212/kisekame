@@ -14,10 +14,10 @@ export const detectLanguage = () => {
 };
 
 const en = {
-  about: "About", guide: "How to use", printGuide: "Print guide", tagline: "Dress up your digicam ✦", share: "Share on X", shareText: "I made a skin for {camera} with KISEKAME!", headerDescription: "Create, preview, and print custom dress-up sheets at actual size for supported PENTAX Optio cameras—right in your browser.", supportedCameras: "Supported models",
+  about: "About", guide: "How to use", printGuide: "Print guide", tagline: "Dress up your digicam ✦", share: "Share on X", shareText: "I made a skin for {camera} with KISEKAME!", headerDescription: "Create, preview, and print custom dress-up sheets at actual size for supported PENTAX Optio cameras—right in your browser.", supportedCameras: "Supported cameras",
   light: "Light", dark: "Dark", switchToDark: "Switch to dark mode", switchToLight: "Switch to light mode", camera: "Camera", paperSize: "Paper Size", skins: "Skins", pages: "pages", page: "Page", columns: "columns", rows: "rows", rotated: "rotated 90°",
-  selectedSkin: "Selected Skin", skin: "Skin", blankSkin: "Blank skin", randomize: "Randomize", randomizeAll: "Shuffle", color: "Color", solid: "Solid", pattern: "Pattern", upload: "Upload",
-  patternColor: "Pattern", background: "Background", scale: "Scale", repeat: "Repeat artwork", printExport: "Get Free Skin",
+  selectedSkin: "Selected Skin", skin: "Skin", blankSkin: "Blank skin", randomize: "Randomize", shuffle: "Shuffle", randomizeAll: "Shuffle All", color: "Color", solid: "Solid", pattern: "Pattern", upload: "Upload",
+  patternColor: "Pattern", background: "Background", scale: "Scale", repeat: "Repeat artwork", printExport: "Print",
   previews: "Skin previews", selected: "Selected", addSkin: "Add", close: "Close", customColor: "Custom color", comingSoon: "coming soon",
   modalGuide: "KISEKAME GUIDE", aboutTitle: "About KISEKAME", cameraTitle: "Supported cameras", guideTitle: "How to use & print",
   aboutBody: "KISEKAME is a browser-based skin designer for the PENTAX Optio RS1500, RS1000, and LS465. Mix colors, playful patterns, and your own artwork to make printable camera skins for supported models.",
@@ -36,7 +36,7 @@ const en = {
   rs1000English: "RS1000 product page — English", rs1000Japanese: "RS1000 product page — Japanese", rs1000SheetCollection: "RS1000 sheet collection", rs1000CollaborationSheets: "Creator collaboration sheets",
   ls465English: "LS465 product page — English", ls465Japanese: "LS465 product page — Japanese", ls465SheetCollection: "LS465 sheet collection",
   step1Title: "Pick a skin", step1Body: "Select any preview you want to edit.", step2Title: "Choose a look", step2Body: "Use a color, customize a pattern, upload artwork, or press Randomize.",
-  step3Title: "Adjust it", step3Body: "Drag the artwork and use Scale until the crop feels right.", step4Title: "Get your skin", step4Body: "Select Get Free Skin to check the finished sheet and save it as a PDF.",
+  step3Title: "Adjust it", step3Body: "Drag the artwork and use Scale until the crop feels right.", step4Title: "Print your skin", step4Body: "Select Print to check the finished sheet and save it as a PDF.",
   guidePrintTitle: "Printing accurately",
   printBody: "Print at 100% or “Actual size.” Turn off “Fit to page” so the cutting size stays accurate.",
   printTip1: "① Use your selected paper size", printTip2: "② Print at actual size", printTip3: "③ Cut along the outline", printTip4: "④ Check the fit before attaching",
@@ -44,10 +44,10 @@ const en = {
 };
 
 const ja = {
-  about: "KISEKAMEについて", guide: "使い方", printGuide: "印刷ガイド", tagline: "デジカメを着せ替えよう ✦", share: "Twitterでシェア", shareText: "KISEKAMEで{camera}用のカメラスキンを作りました！", headerDescription: "PENTAX Optio対応モデルの着せ替えシートをブラウザで自由にデザインし、実寸サイズで印刷できます。", supportedCameras: "対応機種",
+  about: "KISEKAMEについて", guide: "使い方", printGuide: "印刷ガイド", tagline: "デジカメを着せ替えよう ✦", share: "Twitterでシェア", shareText: "KISEKAMEで{camera}用のカメラスキンを作りました！", headerDescription: "PENTAX Optio対応モデルの着せ替えシートをブラウザで自由にデザインし、実寸サイズで印刷できます。", supportedCameras: "対応カメラ",
   light: "ライト", dark: "ダーク", switchToDark: "ダークモードに切り替え", switchToLight: "ライトモードに切り替え", camera: "カメラ", paperSize: "用紙サイズ", skins: "スキン", pages: "ページ", page: "Page", columns: "列", rows: "行", rotated: "90°回転",
-  selectedSkin: "選択中のスキン", skin: "スキン", blankSkin: "無地のスキン", randomize: "ランダム", randomizeAll: "シャッフル", color: "カラー", solid: "無地", pattern: "パターン", upload: "アップロード",
-  patternColor: "パターン", background: "背景", scale: "拡大率", repeat: "画像を繰り返す", printExport: "FREE スキンをGET",
+  selectedSkin: "選択中のスキン", skin: "スキン", blankSkin: "無地のスキン", randomize: "ランダム", shuffle: "シャッフル", randomizeAll: "すべてシャッフル", color: "カラー", solid: "無地", pattern: "パターン", upload: "アップロード",
+  patternColor: "パターン", background: "背景", scale: "拡大率", repeat: "画像を繰り返す", printExport: "印刷",
   previews: "スキンプレビュー", selected: "選択中", addSkin: "追加", close: "閉じる", customColor: "カスタムカラー", comingSoon: "準備中",
   modalGuide: "KISEKAME ガイド", aboutTitle: "KISEKAMEについて", cameraTitle: "対応カメラ", guideTitle: "使い方・印刷ガイド",
   aboutBody: "KISEKAMEは、PENTAX Optio RS1500・RS1000・LS465用のスキンをブラウザでデザインできるサービスです。カラーやパターン、自分の画像を組み合わせて、対応機種の印刷用スキンを作れます。",
@@ -66,7 +66,7 @@ const ja = {
   rs1000English: "RS1000製品ページ（英語）", rs1000Japanese: "RS1000製品ページ（日本語）", rs1000SheetCollection: "RS1000用シートコレクション", rs1000CollaborationSheets: "クリエイターコラボシート",
   ls465English: "LS465製品ページ（英語）", ls465Japanese: "LS465製品ページ（日本語）", ls465SheetCollection: "LS465用シートコレクション",
   step1Title: "スキンを選ぶ", step1Body: "編集したいプレビューを選択します。", step2Title: "デザインを選ぶ", step2Body: "カラー、パターン、画像アップロード、ランダムから選べます。",
-  step3Title: "調整する", step3Body: "画像をドラッグし、拡大率で見え方を整えます。", step4Title: "スキンを保存する", step4Body: "「FREE スキンをGET」から完成イメージを確認し、そのままPDFで保存できます。",
+  step3Title: "調整する", step3Body: "画像をドラッグし、拡大率で見え方を整えます。", step4Title: "スキンを印刷する", step4Body: "「印刷」から完成イメージを確認し、そのままPDFで保存できます。",
   guidePrintTitle: "正確に印刷するには",
   printBody: "印刷倍率は100%または「実際のサイズ」を指定してください。「用紙に合わせる」はオフにするとカットサイズを正確に保てます。",
   printTip1: "① 選択したサイズの用紙を使用", printTip2: "② 実際のサイズで印刷", printTip3: "③ 外周線に沿ってカット", printTip4: "④ 貼る前にサイズを確認",
@@ -74,10 +74,10 @@ const ja = {
 };
 
 const ko = {
-  about: "KISEKAME 소개", guide: "사용 방법", printGuide: "인쇄 가이드", tagline: "디지털카메라를 꾸며보세요 ✦", share: "X에 공유", shareText: "KISEKAME로 {camera}용 카메라 스킨을 만들었어요!", headerDescription: "지원되는 PENTAX Optio 모델의 드레스업 시트를 브라우저에서 자유롭게 디자인하고 실제 크기로 인쇄할 수 있습니다.", supportedCameras: "지원 모델",
+  about: "KISEKAME 소개", guide: "사용 방법", printGuide: "인쇄 가이드", tagline: "디지털카메라를 꾸며보세요 ✦", share: "X에 공유", shareText: "KISEKAME로 {camera}용 카메라 스킨을 만들었어요!", headerDescription: "지원되는 PENTAX Optio 모델의 드레스업 시트를 브라우저에서 자유롭게 디자인하고 실제 크기로 인쇄할 수 있습니다.", supportedCameras: "지원 카메라",
   light: "라이트", dark: "다크", switchToDark: "다크 모드로 전환", switchToLight: "라이트 모드로 전환", camera: "카메라", paperSize: "용지 크기", skins: "스킨", pages: "페이지", page: "Page", columns: "열", rows: "행", rotated: "90° 회전",
-  selectedSkin: "선택한 스킨", skin: "스킨", blankSkin: "빈 스킨", randomize: "랜덤", randomizeAll: "셔플", color: "컬러", solid: "단색", pattern: "패턴", upload: "업로드",
-  patternColor: "패턴", background: "배경", scale: "크기", repeat: "이미지 반복", printExport: "무료 스킨 받기",
+  selectedSkin: "선택한 스킨", skin: "스킨", blankSkin: "빈 스킨", randomize: "랜덤", shuffle: "셔플", randomizeAll: "모두 셔플", color: "컬러", solid: "단색", pattern: "패턴", upload: "업로드",
+  patternColor: "패턴", background: "배경", scale: "크기", repeat: "이미지 반복", printExport: "인쇄",
   previews: "스킨 미리보기", selected: "선택됨", addSkin: "추가", close: "닫기", customColor: "사용자 컬러", comingSoon: "준비 중",
   modalGuide: "KISEKAME 가이드", aboutTitle: "KISEKAME 소개", cameraTitle: "지원 카메라", guideTitle: "사용 및 인쇄 방법",
   aboutBody: "KISEKAME는 PENTAX Optio RS1500, RS1000, LS465용 스킨을 브라우저에서 디자인하는 서비스입니다. 컬러, 패턴, 직접 올린 이미지를 조합해 지원 모델의 인쇄용 카메라 스킨을 만들 수 있습니다.",
@@ -96,7 +96,7 @@ const ko = {
   rs1000English: "RS1000 제품 페이지 — 영어", rs1000Japanese: "RS1000 제품 페이지 — 일본어", rs1000SheetCollection: "RS1000 시트 컬렉션", rs1000CollaborationSheets: "크리에이터 컬래버레이션 시트",
   ls465English: "LS465 제품 페이지 — 영어", ls465Japanese: "LS465 제품 페이지 — 일본어", ls465SheetCollection: "LS465 시트 컬렉션",
   step1Title: "스킨 선택", step1Body: "편집할 미리보기를 선택하세요.", step2Title: "디자인 선택", step2Body: "컬러, 패턴, 이미지 업로드 또는 랜덤 기능을 사용하세요.",
-  step3Title: "조정", step3Body: "이미지를 드래그하고 크기를 조절해 원하는 구도를 만드세요.", step4Title: "스킨 저장", step4Body: "‘무료 스킨 받기’를 눌러 완성된 시트를 확인하고 바로 PDF로 저장할 수 있습니다.",
+  step3Title: "조정", step3Body: "이미지를 드래그하고 크기를 조절해 원하는 구도를 만드세요.", step4Title: "스킨 인쇄", step4Body: "‘인쇄’를 눌러 완성된 시트를 확인하고 바로 PDF로 저장할 수 있습니다.",
   guidePrintTitle: "정확하게 인쇄하기",
   printBody: "인쇄 배율을 100% 또는 ‘실제 크기’로 설정하세요. 정확한 재단 크기를 위해 ‘페이지에 맞춤’을 끄세요.",
   printTip1: "① 선택한 크기의 용지 사용", printTip2: "② 실제 크기로 인쇄", printTip3: "③ 외곽선을 따라 자르기", printTip4: "④ 부착 전에 크기 확인",

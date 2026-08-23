@@ -60,6 +60,10 @@ const CAMERA_DETAILS = [
   },
 ];
 const createSkin = (assetId = null) => ({ id: crypto.randomUUID(), assetId });
+const SkinIdentity = ({ label, name, selected }) => <div className={styles.skinIdentity}>
+  <strong className={`${styles.skinLabel} ${selected ? styles.skinLabelSelected : ""}`}>{label}</strong>
+  <span className={styles.skinName}>{name}</span>
+</div>;
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
 const shuffled = (items) => [...items].sort(() => Math.random() - 0.5);
 const createRandomPatternAsset = (pattern) => {
@@ -137,7 +141,6 @@ export default function App() {
   const [imagePositions, setImagePositions] = useState({});
   const [sourceTab, setSourceTab] = useState("pattern");
   const [uploadError, setUploadError] = useState("");
-  const [customColor, setCustomColor] = useState(KISEKAME_PINK);
   const [patternForeground, setPatternForeground] = useState(KISEKAME_PINK);
   const [patternBackground, setPatternBackground] = useState("#ffe7f1");
   const [showPrint, setShowPrint] = useState(false);
@@ -175,6 +178,9 @@ export default function App() {
   const currentPageSkinCount = skins.length === 0
     ? 0
     : ((skins.length - 1) % printLayout.capacity) + 1;
+  const getSkinName = (asset) => asset?.sourceType === "color"
+    ? t("solid")
+    : (asset?.name ?? t("blankSkin"));
 
   const assignAsset = (asset) => {
     if (!activeSkin) return;
@@ -201,7 +207,7 @@ export default function App() {
     const asset = createRandomAsset();
     if (asset.sourceType === "color") {
       setSourceTab("pattern");
-      setCustomColor(asset.color);
+      setPatternBackground(asset.color);
       assignAsset(asset);
       return;
     }
@@ -292,7 +298,7 @@ export default function App() {
   const activateSkin = (skin) => {
     setActiveSkinId(skin.id);
     const asset = getAsset(skin.assetId);
-    if (asset?.sourceType === "color") setCustomColor(asset.color);
+    if (asset?.sourceType === "color") setPatternBackground(asset.color);
     if (asset?.sourceType === "pattern") {
       setPatternForeground(asset.foreground);
       setPatternBackground(asset.background);
@@ -301,7 +307,6 @@ export default function App() {
   };
 
   const selectedAssetId = activeSkin?.assetId;
-  const activeSkinNumber = skins.findIndex((skin) => skin.id === activeSkin?.id) + 1;
   const activeAsset = getAsset(selectedAssetId);
 
   const toggleTheme = () => {
@@ -386,6 +391,16 @@ export default function App() {
 
       <main className={styles.main}>
         <section className={styles.sidebar}>
+          <div className={styles.printDock}>
+            <button className={styles.btnPrint} onClick={handlePrint} disabled={skins.length === 0}>🖨️ {t("printExport")}</button>
+          </div>
+          <div className={styles.sidebarContent}>
+          <section className={styles.printSummary} aria-label={`${skins.length} ${t("skins")}, ${pageCount} ${t("pages")}`}>
+            <strong>{skins.length} {t("skins")} · {pageCount} {t("pages")}</strong>
+            <div className={styles.capacityTrack}><span style={{ width: `${currentPageSkinCount / printLayout.capacity * 100}%` }} /></div>
+            <span>{printLayout.columns} {t("columns")} × {printLayout.rows} {t("rows")}{printLayout.rotated ? ` · ${t("rotated")}` : ""}</span>
+          </section>
+
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>📷 {t("camera")}</h2>
             <select value={cameraId} onChange={(event) => {
@@ -398,11 +413,6 @@ export default function App() {
                 </option>
               ))}
             </select>
-            <div className={styles.printSummary}>
-              <strong>{skins.length} {t("skins")} · {pageCount} {t("pages")}</strong>
-              <div className={styles.capacityTrack}><span style={{ width: `${currentPageSkinCount / printLayout.capacity * 100}%` }} /></div>
-              <span>{printLayout.columns} {t("columns")} × {printLayout.rows} {t("rows")}{printLayout.rotated ? ` · ${t("rotated")}` : ""}</span>
-            </div>
           </div>
 
           <div className={styles.card}>
@@ -420,13 +430,23 @@ export default function App() {
             <div className={styles.card}>
               <div className={styles.selectedSkinHeading}>
                 <h2 className={styles.cardTitle}>🎨 {t("selectedSkin")}</h2>
-                <strong>{t("skin")} {String(activeSkinNumber).padStart(2, "0")}</strong>
+                <button type="button" className={styles.randomizeButton} onClick={randomizeActiveSkin}>✦ {t("shuffle")}</button>
               </div>
-              <div className={styles.selectedSkinSummary} aria-live="polite">
-                <span className={styles.selectedSkinDot} style={{ background: activeAsset?.color ?? KISEKAME_PINK }} />
-                <span>{activeAsset?.name ?? t("blankSkin")}</span>
-                <button type="button" className={styles.randomizeButton} onClick={randomizeActiveSkin}>✦ {t("randomize")}</button>
-              </div>
+              <select
+                className={styles.skinSelect}
+                value={activeSkin.id}
+                onChange={(event) => {
+                  const skin = skins.find((item) => item.id === event.target.value);
+                  if (skin) activateSkin(skin);
+                }}
+                aria-label={t("selectedSkin")}
+              >
+                {skins.map((skin, index) => (
+                  <option key={skin.id} value={skin.id}>
+                    {t("skin")} {String(index + 1).padStart(2, "0")} · {getSkinName(getAsset(skin.assetId))}
+                  </option>
+                ))}
+              </select>
               <div className={styles.sourceTabs}>
                 {[["pattern", t("pattern")], ["upload", t("upload")]].map(([id, label]) => (
                   <button key={id} type="button" className={sourceTab === id ? styles.sourceTabActive : styles.sourceTab} onClick={() => setSourceTab(id)}>{label}</button>
@@ -435,8 +455,8 @@ export default function App() {
 
               {sourceTab === "pattern" && <>
                 <div className={styles.patternGrid}>
-                  <button type="button" className={`${styles.patternChoice} ${activeAsset?.sourceType === "color" ? styles.patternChoiceSelected : ""}`} onClick={() => assignGeneratedAsset(createColorAsset(customColor))}>
-                    <span className={styles.solidChoicePreview} style={{ background: customColor }} />
+                  <button type="button" className={`${styles.patternChoice} ${activeAsset?.sourceType === "color" ? styles.patternChoiceSelected : ""}`} onClick={() => assignGeneratedAsset(createColorAsset(patternBackground))}>
+                    <span className={styles.solidChoicePreview} style={{ background: patternBackground }} />
                     <span>{t("solid")}</span>
                   </button>
                   {PATTERN_TEMPLATES.map((asset) => {
@@ -445,10 +465,10 @@ export default function App() {
                   })}
                 </div>
                 {activeAsset?.sourceType === "color" ? <div className={styles.colorGrid}>
-                  {COLOR_TEMPLATES.map((asset) => <button key={asset.id} type="button" className={`${styles.colorSwatch} ${selectedAssetId === asset.id ? styles.colorSwatchSelected : ""}`} style={{ background: asset.color }} onClick={() => { setCustomColor(asset.color); assignAsset(asset); }} aria-label={asset.name} title={asset.name}>{selectedAssetId === asset.id ? "✓" : ""}</button>)}
+                  {COLOR_TEMPLATES.map((asset) => <button key={asset.id} type="button" className={`${styles.colorSwatch} ${selectedAssetId === asset.id ? styles.colorSwatchSelected : ""}`} style={{ background: asset.color }} onClick={() => { setPatternBackground(asset.color); assignAsset(asset); }} aria-label={asset.name} title={asset.name}>{selectedAssetId === asset.id ? "✓" : ""}</button>)}
                   <label className={styles.customColor} title={t("customColor")}>
-                    <input type="color" value={customColor} onChange={(event) => {
-                      setCustomColor(event.target.value);
+                    <input type="color" value={patternBackground} onChange={(event) => {
+                      setPatternBackground(event.target.value);
                       assignGeneratedAsset(createColorAsset(event.target.value));
                     }} />
                     <span>＋</span>
@@ -490,8 +510,7 @@ export default function App() {
               </div>}
             </div>
           )}
-
-          <button className={styles.btnPrint} onClick={handlePrint} disabled={skins.length === 0}>✨ {t("printExport")}</button>
+          </div>
         </section>
 
         <section className={styles.preview}>
@@ -510,7 +529,7 @@ export default function App() {
               return <Fragment key={skin.id}>
                 {startsPage && <div className={styles.pageDivider}><span>{t("page")} {Math.floor(index / printLayout.capacity) + 1}</span></div>}
                 <div className={`${styles.panelWrapper} ${isActive ? styles.panelWrapperActive : ""}`} onMouseDown={() => activateSkin(skin)} aria-current={isActive ? "true" : undefined}>
-                  <div className={styles.patternHeader}><strong>{t("skin")} {String(index + 1).padStart(2, "0")} {isActive && <span className={styles.selectedBadge}>{t("selected")}</span>}</strong><button type="button" className={styles.removeSkin} onClick={(event) => { event.stopPropagation(); removeSkin(skin.id); }} aria-label={`Remove Skin ${index + 1}`}>×</button></div>
+                  <div className={styles.patternHeader}><SkinIdentity label={`${t("skin")} ${String(index + 1).padStart(2, "0")}`} name={getSkinName(asset)} selected={isActive} /><button type="button" className={styles.removeSkin} onClick={(event) => { event.stopPropagation(); removeSkin(skin.id); }} aria-label={`Remove Skin ${index + 1}`}>×</button></div>
                   <SkinCanvas theme={theme} panel={panel} image={asset} imagePos={imagePositions[skin.id]?.[panel.id] ?? getDefaultImagePos(asset)} onImagePosChange={(pos) => handlePosChange(skin.id, panel.id, { ...pos, imageId: skin.assetId })} />
                 </div>
               </Fragment>;
