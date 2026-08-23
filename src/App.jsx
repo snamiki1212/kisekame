@@ -1,79 +1,134 @@
 import { useState } from "react";
 import { CAMERAS, PAPER_SIZES } from "./data/cameras";
+import {
+  COLOR_TEMPLATES,
+  createColorAsset,
+  createPatternAsset,
+  PATTERN_TEMPLATES,
+} from "./data/starterPatterns";
 import { SkinCanvas } from "./components/SkinCanvas";
 import { ImageUploader } from "./components/ImageUploader";
-import { PrintSheet } from "./components/PrintSheet";
+import { getBestPrintLayout, PrintSheet } from "./components/PrintSheet";
 import styles from "./App.module.css";
 
 const DEFAULT_IMAGE_POS = { x: 0, y: 0, scale: 1 };
+const createSkin = () => ({ id: crypto.randomUUID(), assetId: null });
+const createInitialSkins = () => Array.from({ length: 3 }, createSkin);
 
-const readImageFile = (file) =>
+const readBlob = (blob, name) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = reject;
     reader.onload = () => {
       const preview = new Image();
       preview.onerror = reject;
-      preview.onload = () =>
-        resolve({
-          id: crypto.randomUUID(),
-          name: file.name,
-          src: reader.result,
-          width: preview.naturalWidth,
-          height: preview.naturalHeight,
-        });
+      preview.onload = () => resolve({
+        id: crypto.randomUUID(), name, src: reader.result,
+        width: preview.naturalWidth, height: preview.naturalHeight,
+      });
       preview.src = reader.result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(blob);
   });
+
+const readImageFile = async (file) => {
+  const looksLikeHeic = /\.hei[cf]$/i.test(file.name) || /image\/hei[cf]/i.test(file.type);
+  if (!looksLikeHeic) return readBlob(file, file.name);
+
+  const { heicTo, isHeic } = await import("heic-to");
+  if (!(await isHeic(file))) throw new Error("This HEIC/HEIF file could not be decoded.");
+  const jpeg = await heicTo({ blob: file, type: "image/jpeg", quality: 0.92 });
+  return readBlob(jpeg, file.name.replace(/\.hei[cf]$/i, ".jpg"));
+};
 
 export default function App() {
   const [cameraId, setCameraId] = useState(CAMERAS[0].id);
   const [paperId, setPaperId] = useState(PAPER_SIZES[0].id);
-  const [images, setImages] = useState([]);
-  const [activeImageId, setActiveImageId] = useState(null);
-  // imagePositions: { [panelId]: { x, y, scale } }
+  const [skins, setSkins] = useState(createInitialSkins);
+  const [uploads, setUploads] = useState([]);
+  const [customAssets, setCustomAssets] = useState([]);
+  const [activeSkinId, setActiveSkinId] = useState(null);
   const [imagePositions, setImagePositions] = useState({});
-  const [activePanelId, setActivePanelId] = useState(CAMERAS[0].panels[0].id);
+  const [sourceTab, setSourceTab] = useState("color");
+  const [uploadError, setUploadError] = useState("");
+  const [customColor, setCustomColor] = useState("#4a90e2");
+  const [patternForeground, setPatternForeground] = useState("#5c7cfa");
+  const [patternBackground, setPatternBackground] = useState("#f8f9fa");
   const [showPrint, setShowPrint] = useState(false);
 
-  const camera = CAMERAS.find((c) => c.id === cameraId);
-  const paperSize = PAPER_SIZES.find((p) => p.id === paperId);
+  const camera = CAMERAS.find((item) => item.id === cameraId);
+  const paperSize = PAPER_SIZES.find((item) => item.id === paperId);
+  const printLayout = getBestPrintLayout(camera, paperSize);
+  const activeSkin = skins.find((skin) => skin.id === activeSkinId) ?? skins[0];
+  const allAssets = [...COLOR_TEMPLATES, ...PATTERN_TEMPLATES, ...customAssets, ...uploads];
+  const getAsset = (assetId) => allAssets.find((asset) => asset.id === assetId);
+  const isFull = skins.length >= printLayout.capacity;
+
+  const assignAsset = (asset) => {
+    if (!activeSkin) return;
+    setSkins((current) => current.map((skin) =>
+      skin.id === activeSkin.id ? { ...skin, assetId: asset.id } : skin
+    ));
+    setImagePositions((current) => ({
+      ...current,
+      [activeSkin.id]: Object.fromEntries(camera.panels.map((panel) => [
+        panel.id, { ...DEFAULT_IMAGE_POS, imageId: asset.id },
+      ])),
+    }));
+  };
+
+  const assignGeneratedAsset = (asset) => {
+    setCustomAssets((current) => current.some((item) => item.id === asset.id)
+      ? current
+      : [...current, asset]
+    );
+    assignAsset(asset);
+  };
 
   const handleImageUpload = async (files) => {
-    const uploaded = await Promise.all(files.map(readImageFile));
-    setImages((current) => [...current, ...uploaded]);
-    setActiveImageId(uploaded[0].id);
-    const panelId = activePanelId ?? camera.panels[0].id;
-    setActivePanelId(panelId);
+    setUploadError("");
+    try {
+      const uploaded = await Promise.all(files.map(readImageFile));
+      setUploads((current) => [...current, ...uploaded]);
+      if (uploaded[0]) assignAsset(uploaded[0]);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "HEIC conversion failed.");
+    }
+  };
+
+  const addSkin = () => {
+    if (isFull) return;
+    const skin = createSkin();
+    setSkins((current) => [...current, skin]);
+    setActiveSkinId(skin.id);
+  };
+
+  const removeSkin = (skinId) => {
+    if (!window.confirm("Remove this skin?")) return;
+    setSkins((current) => {
+      const next = current.filter((skin) => skin.id !== skinId);
+      setActiveSkinId((activeId) => activeId === skinId ? (next[0]?.id ?? null) : activeId);
+      return next;
+    });
+    setImagePositions((current) => {
+      const next = { ...current };
+      delete next[skinId];
+      return next;
+    });
+  };
+
+  const removeUpload = (assetId) => {
+    setUploads((current) => current.filter((asset) => asset.id !== assetId));
+    setSkins((current) => current.map((skin) =>
+      skin.assetId === assetId ? { ...skin, assetId: null } : skin
+    ));
+  };
+
+  const handlePosChange = (skinId, panelId, pos) => {
     setImagePositions((current) => ({
       ...current,
-      [panelId]: current[panelId]?.imageId
-        ? current[panelId]
-        : { ...DEFAULT_IMAGE_POS, imageId: uploaded[0].id },
+      [skinId]: { ...current[skinId], [panelId]: pos },
     }));
-  };
-
-  const applyActiveImage = () => {
-    if (!activePanelId || !activeImageId) return;
-    setImagePositions((current) => ({
-      ...current,
-      [activePanelId]: { ...DEFAULT_IMAGE_POS, imageId: activeImageId },
-    }));
-  };
-
-  const removeImage = (imageId) => {
-    setImages((current) => current.filter((image) => image.id !== imageId));
-    setActiveImageId((current) => (current === imageId ? null : current));
-    setImagePositions((current) =>
-      Object.fromEntries(
-        Object.entries(current).filter(([, pos]) => pos.imageId !== imageId)
-      )
-    );
-  };
-
-  const handlePosChange = (panelId, pos) => {
-    setImagePositions((prev) => ({ ...prev, [panelId]: pos }));
   };
 
   const handlePrint = () => {
@@ -84,185 +139,138 @@ export default function App() {
     }, 300);
   };
 
+  const activateSkin = (skin) => {
+    setActiveSkinId(skin.id);
+    const asset = getAsset(skin.assetId);
+    if (asset?.sourceType === "color") setCustomColor(asset.color);
+    if (asset?.sourceType === "pattern") {
+      setPatternForeground(asset.foreground);
+      setPatternBackground(asset.background);
+    }
+  };
+
+  const selectedAssetId = activeSkin?.assetId;
+
   return (
     <div className={styles.app}>
       <header className={styles.header}>
         <h1 className={styles.title}>Digicam Skin Designer</h1>
-        <p className={styles.subtitle}>
-          Design and print custom skins for your digital camera
-        </p>
+        <p className={styles.subtitle}>Create, preview, and print custom skins for digital cameras</p>
       </header>
 
       <main className={styles.main}>
-        {/* --- Settings Panel --- */}
         <section className={styles.sidebar}>
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>📷 Camera</h2>
-            <select
-              value={cameraId}
-              onChange={(e) => {
-                const nextCamera = CAMERAS.find((c) => c.id === e.target.value);
-                setCameraId(e.target.value);
-                setImagePositions({});
-                setActivePanelId(nextCamera.panels[0].id);
-              }}
-              className={styles.select}
-            >
-              {CAMERAS.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
+            <select value={cameraId} onChange={(event) => {
+              const nextSkins = createInitialSkins();
+              setCameraId(event.target.value);
+              setSkins(nextSkins);
+              setActiveSkinId(nextSkins[0].id);
+              setImagePositions({});
+            }} className={styles.select}>
+              {CAMERAS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
             </select>
+            <div className={styles.printSummary}>
+              <strong>Skins {skins.length} / {printLayout.capacity}</strong>
+              <div className={styles.capacityTrack}><span style={{ width: `${skins.length / printLayout.capacity * 100}%` }} /></div>
+              <span>{printLayout.columns} columns × {printLayout.rows} rows{printLayout.rotated ? " · rotated 90°" : ""}</span>
+            </div>
           </div>
 
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>📄 Paper Size</h2>
-            <select
-              value={paperId}
-              onChange={(e) => setPaperId(e.target.value)}
-              className={styles.select}
-            >
-              {PAPER_SIZES.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.label} ({p.widthMm}×{p.heightMm}mm)
+            <select value={paperId} onChange={(event) => setPaperId(event.target.value)} className={styles.select}>
+              {PAPER_SIZES.map((item) => (
+                <option key={item.id} value={item.id} disabled={getBestPrintLayout(camera, item).capacity < skins.length}>
+                  {item.label} ({item.widthMm}×{item.heightMm}mm)
                 </option>
               ))}
             </select>
           </div>
 
-          <div className={styles.card}>
-            <h2 className={styles.cardTitle}>🖼️ Image Upload</h2>
-            <ImageUploader onUpload={handleImageUpload} />
-            {images.length > 0 && (
-              <div className={styles.imageList} aria-label="Uploaded images">
-                {images.map((image) => (
-                  <div
-                    key={image.id}
-                    className={`${styles.imageItem} ${
-                      activeImageId === image.id ? styles.imageItemActive : ""
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      className={styles.imageSelect}
-                      onClick={() => setActiveImageId(image.id)}
-                      title={image.name}
-                    >
-                      <img src={image.src} alt={image.name} className={styles.thumbImg} />
-                      <span className={styles.imageName}>{image.name}</span>
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.removeImage}
-                      onClick={() => removeImage(image.id)}
-                      aria-label={`Remove ${image.name}`}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {images.length > 0 && (
+          {activeSkin && (
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>🎯 Apply To Skin</h2>
-              <div className={styles.panelPicker}>
-                {camera.panels.map((p) => (
-                  <button
-                    key={p.id}
-                    className={`${styles.panelBtn} ${
-                      activePanelId === p.id ? styles.panelBtnActive : ""
-                    }`}
-                    onClick={() => setActivePanelId(p.id)}
-                  >
-                    {p.label}
-                  </button>
+              <h2 className={styles.cardTitle}>🎨 Selected Skin</h2>
+              <div className={styles.sourceTabs}>
+                {[["color", "Color"], ["pattern", "Pattern"], ["upload", "Upload"]].map(([id, label]) => (
+                  <button key={id} type="button" className={sourceTab === id ? styles.sourceTabActive : styles.sourceTab} onClick={() => setSourceTab(id)}>{label}</button>
                 ))}
               </div>
-              <button
-                type="button"
-                className={styles.btnSecondary}
-                onClick={applyActiveImage}
-                disabled={!activeImageId || !activePanelId}
-              >
-                Apply selected image
-              </button>
-              {activePanelId && (
-                <div className={styles.scaleControl}>
-                  <label htmlFor="scale-input" className={styles.scaleLabel}>
-                    Scale:{" "}
-                    {((imagePositions[activePanelId]?.scale ?? 1) * 100).toFixed(
-                      0
-                    )}
-                    %
-                  </label>
-                  <input
-                    id="scale-input"
-                    type="range"
-                    min="0.1"
-                    max="3"
-                    step="0.05"
-                    value={imagePositions[activePanelId]?.scale ?? 1}
-                    onChange={(e) =>
-                      handlePosChange(activePanelId, {
-                        ...(imagePositions[activePanelId] ?? DEFAULT_IMAGE_POS),
-                        scale: parseFloat(e.target.value),
-                      })
-                    }
-                    className={styles.slider}
-                  />
+
+              {sourceTab === "color" && <div className={styles.colorGrid}>
+                {COLOR_TEMPLATES.map((asset) => <button key={asset.id} type="button" className={`${styles.colorSwatch} ${selectedAssetId === asset.id ? styles.colorSwatchSelected : ""}`} style={{ background: asset.color }} onClick={() => assignAsset(asset)} aria-label={asset.name} title={asset.name}>{selectedAssetId === asset.id ? "✓" : ""}</button>)}
+                <label className={styles.customColor} title="Custom color">
+                  <input type="color" value={customColor} onChange={(event) => {
+                    setCustomColor(event.target.value);
+                    assignGeneratedAsset(createColorAsset(event.target.value));
+                  }} />
+                  <span>＋</span>
+                </label>
+              </div>}
+
+              {sourceTab === "pattern" && <>
+                <div className={styles.patternGrid}>
+                  {PATTERN_TEMPLATES.map((asset) => {
+                    const customized = createPatternAsset(asset.patternId, patternForeground, patternBackground);
+                    return <button key={asset.id} type="button" className={`${styles.patternChoice} ${getAsset(selectedAssetId)?.patternId === asset.patternId ? styles.patternChoiceSelected : ""}`} onClick={() => assignGeneratedAsset(customized)}><img src={customized.src} alt="" /><span>{asset.name}</span></button>;
+                  })}
                 </div>
-              )}
+                <div className={styles.patternColors}>
+                  <label>Pattern <input type="color" value={patternForeground} onChange={(event) => {
+                    const color = event.target.value;
+                    setPatternForeground(color);
+                    const patternId = getAsset(selectedAssetId)?.patternId;
+                    if (patternId) assignGeneratedAsset(createPatternAsset(patternId, color, patternBackground));
+                  }} /></label>
+                  <label>Background <input type="color" value={patternBackground} onChange={(event) => {
+                    const color = event.target.value;
+                    setPatternBackground(color);
+                    const patternId = getAsset(selectedAssetId)?.patternId;
+                    if (patternId) assignGeneratedAsset(createPatternAsset(patternId, patternForeground, color));
+                  }} /></label>
+                </div>
+              </>}
+
+              {sourceTab === "upload" && <>
+                <ImageUploader onUpload={handleImageUpload} />
+                {uploadError && <div className={styles.uploadError} role="alert">{uploadError}</div>}
+                <div className={styles.imageList}>
+                  {uploads.map((asset) => <div key={asset.id} className={`${styles.imageItem} ${selectedAssetId === asset.id ? styles.imageItemActive : ""}`}>
+                    <button type="button" className={styles.imageSelect} onClick={() => assignAsset(asset)}><img src={asset.src} alt={asset.name} className={styles.thumbImg} /><span className={styles.imageName}>{asset.name}</span></button>
+                    <button type="button" className={styles.removeImage} onClick={() => removeUpload(asset.id)} aria-label={`Remove ${asset.name}`}>×</button>
+                  </div>)}
+                </div>
+              </>}
+
+              {selectedAssetId && <div className={styles.scaleControl}>
+                <label htmlFor="scale-input" className={styles.scaleLabel}>Scale: {((imagePositions[activeSkin.id]?.[camera.panels[0].id]?.scale ?? 1) * 100).toFixed(0)}%</label>
+                <input id="scale-input" type="range" min="0.1" max="3" step="0.05" value={imagePositions[activeSkin.id]?.[camera.panels[0].id]?.scale ?? 1} onChange={(event) => handlePosChange(activeSkin.id, camera.panels[0].id, { ...(imagePositions[activeSkin.id]?.[camera.panels[0].id] ?? DEFAULT_IMAGE_POS), imageId: selectedAssetId, scale: Number(event.target.value) })} className={styles.slider} />
+              </div>}
             </div>
           )}
 
-          <button className={styles.btnPrint} onClick={handlePrint}>
-            🖨️ Print / Export PDF
-          </button>
+          <button className={styles.btnPrint} onClick={handlePrint} disabled={skins.length === 0}>🖨️ Print / Export PDF</button>
         </section>
 
-        {/* --- Preview Area --- */}
         <section className={styles.preview}>
-          <h2 className={styles.previewTitle}>
-            Preview — {camera.name}
-          </h2>
+          <div className={styles.previewHeading}>
+            <h2 className={styles.previewTitle}>Skin previews — {camera.name}</h2>
+            <span className={styles.previewCount}>{skins.length} skins</span>
+          </div>
           <div className={styles.panelGrid}>
-            {camera.panels.map((panel) => (
-              <div
-                key={panel.id}
-                className={`${styles.panelWrapper} ${
-                  activePanelId === panel.id ? styles.panelWrapperActive : ""
-                }`}
-                onClick={() => images.length && setActivePanelId(panel.id)}
-              >
-                <SkinCanvas
-                  panel={panel}
-                  image={images.find(
-                    (image) => image.id === imagePositions[panel.id]?.imageId
-                  )}
-                  imagePos={
-                    imagePositions[panel.id] ?? DEFAULT_IMAGE_POS
-                  }
-                  onImagePosChange={(pos) => handlePosChange(panel.id, pos)}
-                />
-              </div>
-            ))}
+            {skins.map((skin, index) => {
+              const asset = getAsset(skin.assetId);
+              const panel = camera.panels[0];
+              return <div key={skin.id} className={`${styles.panelWrapper} ${activeSkin?.id === skin.id ? styles.panelWrapperActive : ""}`} onMouseDown={() => activateSkin(skin)}>
+                <div className={styles.patternHeader}><strong>Skin {String(index + 1).padStart(2, "0")}</strong><button type="button" className={styles.removeSkin} onClick={(event) => { event.stopPropagation(); removeSkin(skin.id); }} aria-label={`Remove Skin ${index + 1}`}>×</button></div>
+                <SkinCanvas panel={panel} image={asset} imagePos={imagePositions[skin.id]?.[panel.id] ?? DEFAULT_IMAGE_POS} onImagePosChange={(pos) => handlePosChange(skin.id, panel.id, { ...pos, imageId: skin.assetId })} />
+              </div>;
+            })}
+            <button type="button" className={styles.addSkin} onClick={addSkin} disabled={isFull}><span>＋</span>Add Skin</button>
           </div>
 
-          {/* Print layout preview (shown only during print) */}
-          {showPrint && (
-            <div className={styles.printArea}>
-              <PrintSheet
-                camera={camera}
-                paperSize={paperSize}
-                images={images}
-                imagePositions={imagePositions}
-              />
-            </div>
-          )}
+          {showPrint && <div className={styles.printArea}><PrintSheet camera={camera} paperSize={paperSize} skins={skins.map((skin) => ({ ...skin, image: getAsset(skin.assetId), positions: imagePositions[skin.id] }))} /></div>}
         </section>
       </main>
     </div>

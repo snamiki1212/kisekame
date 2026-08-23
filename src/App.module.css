@@ -67,6 +67,177 @@
   color: #333;
 }
 
+.printSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 6px;
+  background: #eef5ff;
+  color: #31577f;
+  font-size: 11px;
+}
+
+.printSummary strong {
+  font-size: 13px;
+}
+
+.capacityTrack {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #d4e2f2;
+}
+
+.capacityTrack span {
+  display: block;
+  height: 100%;
+  background: #4a90e2;
+  transition: width 0.2s;
+}
+
+.sourceTabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 3px;
+  border-radius: 7px;
+  background: #e9ecef;
+}
+
+.sourceTab,
+.sourceTabActive {
+  padding: 6px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #667;
+  font-size: 12px;
+}
+
+.sourceTabActive {
+  background: #fff;
+  color: #222;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 7px;
+}
+
+.colorSwatch {
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 17px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.colorSwatchSelected {
+  border-color: #111;
+  box-shadow: 0 0 0 2px #fff inset;
+}
+
+.colorSwatch:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.customColor {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 2px dashed #777;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.customColor input {
+  position: absolute;
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+  border: 0;
+  cursor: pointer;
+}
+
+.customColor span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 17px;
+  pointer-events: none;
+  text-shadow: 0 1px 2px #000;
+}
+
+.patternGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.patternChoice {
+  min-width: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: #fff;
+  color: #555;
+  font-size: 10px;
+}
+
+.patternChoice img {
+  display: block;
+  width: 100%;
+  height: 38px;
+  object-fit: cover;
+}
+
+.patternChoice span {
+  display: block;
+  padding: 3px;
+}
+
+.patternChoiceSelected {
+  border-color: #4a90e2;
+}
+
+.patternColors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.patternColors label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  color: #666;
+  font-size: 10px;
+}
+
+.patternColors input {
+  width: 34px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.uploadError {
+  padding: 7px;
+  border-radius: 5px;
+  background: #fff0f0;
+  color: #c92a2a;
+  font-size: 11px;
+}
+
 .imageList {
   display: grid;
   gap: 6px;
@@ -178,6 +349,11 @@
   background: #2e2e5e;
 }
 
+.btnPrint:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
 .btnSecondary {
   padding: 4px 10px;
   border: 1px solid #ccc;
@@ -202,9 +378,21 @@
   color: #333;
 }
 
-.panelGrid {
+.previewHeading {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.previewCount {
+  color: #777;
+  font-size: 12px;
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(316px, 1fr));
   gap: 24px;
 }
 
@@ -217,6 +405,64 @@
 
 .panelWrapperActive {
   border-color: #4a90e2;
+}
+
+.patternHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  max-width: 316px;
+  margin-bottom: 4px;
+  color: #333;
+  font-size: 12px;
+}
+
+.patternHeader span {
+  overflow: hidden;
+  color: #777;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.removeSkin {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: #eee;
+  color: #666;
+  font-size: 16px;
+}
+
+.addSkin {
+  width: 332px;
+  min-height: 260px;
+  align-self: stretch;
+  border: 2px dashed #bbb;
+  border-radius: 8px;
+  background: transparent;
+  color: #777;
+  font-size: 13px;
+}
+
+.addSkin span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 32px;
+}
+
+.addSkin:disabled {
+  cursor: not-allowed;
+  opacity: 0.25;
+}
+
+.emptyPreview {
+  padding: 32px;
+  border: 1px dashed #bbb;
+  border-radius: 8px;
+  color: #888;
+  font-size: 13px;
 }
 
 /* Print area — hidden from screen, visible when printing */
@@ -236,8 +482,11 @@
 
   .preview {
     padding: 0;
+    gap: 0;
+    overflow: visible;
   }
 
+  .previewHeading,
   .panelGrid {
     display: none;
   }

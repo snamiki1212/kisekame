@@ -14,6 +14,12 @@
   background: #f0f6ff;
 }
 
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
 .icon {
   font-size: 28px;
   display: block;

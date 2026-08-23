@@ -6,14 +6,15 @@
 }
 
 .content {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
+  display: grid;
+}
+
+.slot {
+  position: relative;
 }
 
 .panel {
-  position: relative;
-  flex-shrink: 0;
+  transform-origin: top left;
 }
 
 .template {
@@ -26,5 +27,15 @@
   .sheet {
     box-shadow: none;
     page-break-after: always;
+    break-after: page;
   }
+
+  .sheet:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+}
+.pages {
+  display: flex;
+  flex-direction: column;
 }
