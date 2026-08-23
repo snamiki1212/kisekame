@@ -7,7 +7,7 @@ const MM_TO_PX = 3.78; // 1mm ≈ 3.78px at 96dpi
  * SkinCanvas renders a single skin panel with an optional uploaded image.
  * The image position can be adjusted via drag-and-drop inside the canvas.
  */
-export function SkinCanvas({ panel, image, imagePos, onImagePosChange }) {
+export function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "light" }) {
   const canvasRef = useRef(null);
   const draggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
@@ -33,10 +33,10 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange }) {
       ctx.save();
       if (panel.shape) ctx.scale(scaleX, scaleY);
       if (mode === "fill") {
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = theme === "dark" ? "#102319" : "#ffffff";
         ctx.fill(shape, panel.shape?.fillRule ?? "nonzero");
       } else {
-        ctx.strokeStyle = "#555";
+        ctx.strokeStyle = theme === "dark" ? "#547461" : "#555";
         ctx.lineWidth = panel.shape ? 1 / scaleX : 1;
         ctx.stroke(shape, panel.shape?.fillRule ?? "nonzero");
       }
@@ -71,7 +71,7 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange }) {
     drawShape("stroke");
 
     // Panel label
-    ctx.fillStyle = image ? "rgba(0,0,0,0.3)" : "#aaa";
+    ctx.fillStyle = image ? "rgba(0,0,0,0.3)" : (theme === "dark" ? "#91aa98" : "#aaa");
     ctx.font = "11px system-ui";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -81,7 +81,7 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange }) {
     return () => {
       cancelled = true;
     };
-  }, [panel, image, imagePos, width, height]);
+  }, [panel, image, imagePos, theme, width, height]);
 
   // Drag-and-drop to reposition image inside canvas
   const handleMouseDown = (e) => {

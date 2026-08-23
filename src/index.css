@@ -6,10 +6,17 @@
 
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: #f5f5f5;
-  color: #333;
+  min-width: 320px;
+  background: #f8f5ed;
+  color: #083920;
 }
 
 button {
   cursor: pointer;
+  font: inherit;
+}
+
+button:focus-visible, select:focus-visible, input:focus-visible, [role="button"]:focus-visible {
+  outline: 3px solid #df4385;
+  outline-offset: 2px;
 }

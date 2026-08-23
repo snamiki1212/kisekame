@@ -1,17 +1,17 @@
 .dropzone {
-  border: 2px dashed #aaa;
-  border-radius: 8px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
   padding: 24px 32px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
-  background: #fafafa;
+  background: var(--surface-soft);
 }
 
 .dropzone:hover,
 .active {
-  border-color: #4a90e2;
-  background: #f0f6ff;
+  border-color: var(--pink);
+  background: var(--pink-soft);
 }
 
 .disabled {
@@ -28,7 +28,7 @@
 
 .text {
   font-size: 13px;
-  color: #666;
+  color: var(--ink-muted);
 }
 
 .hidden {

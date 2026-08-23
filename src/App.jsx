@@ -42,6 +42,11 @@ const readImageFile = async (file) => {
 };
 
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem("kisekame-theme");
+    if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
   const [cameraId, setCameraId] = useState(CAMERAS[0].id);
   const [paperId, setPaperId] = useState(PAPER_SIZES[0].id);
   const [skins, setSkins] = useState(createInitialSkins);
@@ -151,11 +156,30 @@ export default function App() {
 
   const selectedAssetId = activeSkin?.assetId;
 
+  const toggleTheme = () => {
+    setTheme((current) => {
+      const next = current === "light" ? "dark" : "light";
+      localStorage.setItem("kisekame-theme", next);
+      return next;
+    });
+  };
+
   return (
-    <div className={styles.app}>
+    <div className={styles.app} data-theme={theme}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Digicam Skin Designer</h1>
-        <p className={styles.subtitle}>Create, preview, and print custom skins for digital cameras</p>
+        <div className={styles.brandLockup}>
+          <h1 className={styles.title}>KISEKAME</h1>
+          <p className={styles.subtitle}>Digicam Skin Designer</p>
+        </div>
+        <div className={styles.headerActions}>
+          <span className={styles.tagline}>Dress up your digicam ✦</span>
+          <button type="button" className={styles.themeToggle} onClick={toggleTheme} role="switch" aria-label="Dark mode" aria-checked={theme === "dark"}>
+            <span className={styles.themeLabel}>{theme === "light" ? "Light" : "Dark"}</span>
+            <span className={styles.switchTrack} aria-hidden="true">
+              <span className={styles.switchThumb}>{theme === "light" ? "☀" : "☾"}</span>
+            </span>
+          </button>
+        </div>
       </header>
 
       <main className={styles.main}>
@@ -264,7 +288,7 @@ export default function App() {
               const panel = camera.panels[0];
               return <div key={skin.id} className={`${styles.panelWrapper} ${activeSkin?.id === skin.id ? styles.panelWrapperActive : ""}`} onMouseDown={() => activateSkin(skin)}>
                 <div className={styles.patternHeader}><strong>Skin {String(index + 1).padStart(2, "0")}</strong><button type="button" className={styles.removeSkin} onClick={(event) => { event.stopPropagation(); removeSkin(skin.id); }} aria-label={`Remove Skin ${index + 1}`}>×</button></div>
-                <SkinCanvas panel={panel} image={asset} imagePos={imagePositions[skin.id]?.[panel.id] ?? DEFAULT_IMAGE_POS} onImagePosChange={(pos) => handlePosChange(skin.id, panel.id, { ...pos, imageId: skin.assetId })} />
+                <SkinCanvas theme={theme} panel={panel} image={asset} imagePos={imagePositions[skin.id]?.[panel.id] ?? DEFAULT_IMAGE_POS} onImagePosChange={(pos) => handlePosChange(skin.id, panel.id, { ...pos, imageId: skin.assetId })} />
               </div>;
             })}
             <button type="button" className={styles.addSkin} onClick={addSkin} disabled={isFull}><span>＋</span>Add Skin</button>
