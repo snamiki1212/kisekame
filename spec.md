@@ -1,8 +1,59 @@
-# Digicam Skin Designer — Specification
+# Kisekame — Digicam Skin Designer Specification
+
+## Service Identity
+
+- **Service name:** Kisekame
+- **Logo / display wordmark:** KISEKAME
+- **Descriptor:** Digicam Skin Designer
+- **Name origin:** Japanese **着せ替えカメラ** (a camera that can change its outfit)
+
+The naming decision and alternatives are recorded in
+[`adr/20260823_app-name-candidates`](adr/20260823_app-name-candidates/README.md).
+
+The product name is the distinctive brand; the descriptor explains the function
+and carries descriptive search terms. The preferred lockup is:
+
+> **KISEKAME**<br>
+> Digicam Skin Designer
+
+### Brand personality
+
+Kisekame should feel like a small creative playground rather than a technical
+print-production utility. The experience should be:
+
+- **pop and kawaii:** cheerful, friendly, and collectible without becoming childish;
+- **Heisei retro:** inspired by late-1990s and 2000s stationery, purikura,
+  translucent electronics, compact cameras, and decorated flip phones;
+- **creative:** choosing colours, patterns, and photos should feel like playing with stickers;
+- **light:** white space and bright accents should dominate over grey tool chrome;
+- **approachable:** controls should use familiar language and direct manipulation;
+- **precise underneath:** physical sizing and print accuracy remain dependable, but are not the visual personality.
+
+Avoid enterprise-dashboard styling, dense toolbars, dark industrial palettes,
+technical jargon, and excessive borders. Prefer rounded shapes, generous white
+space, large colour swatches, friendly microcopy, and small moments of playful
+feedback when a skin is added or changed.
+
+### Colour direction
+
+- White is the dominant canvas and card colour.
+- Bright colour is used generously enough to feel pop and creative, without
+  reducing the white-space-led lightness.
+- Text uses a warm tinted near-black rather than a cold tool-like black.
+- Supporting colours represent creative variety rather than dashboard statuses.
+- The adopted **Heisei Deco** palette uses Deep Green `#083920`, Deco Pink `#DF4385`, and
+  Sticker Lime `#97CD3F` on a white or Milky White base.
+- Deep Green carries text and dependable actions; Pink and Lime carry selection,
+  decoration, and playful creative feedback.
+- Text and interactive controls must meet WCAG AA independently of decorative
+  swatches.
+
+Palette candidates and the eventual colour decision are recorded in
+[`adr/20260823_brand-identity`](adr/20260823_brand-identity/README.md).
 
 ## Overview
 
-A web application for designing and printing custom skins (protective/decorative stickers) for digital cameras.
+Kisekame is a web application for designing and printing custom skins (protective/decorative stickers) for digital cameras.
 Users select a target camera, upload an artwork image, adjust its position and scale within each skin panel,
 then export/print a print-ready PDF-quality layout.
 
@@ -39,7 +90,7 @@ Additional cameras will be added over time. Each camera definition describes tha
 - Supported methods:
   - **Drag-and-drop** onto the upload zone.
   - **File picker** (click to browse).
-- Accepted formats: any browser-supported image type (JPEG, PNG, WebP, etc.).
+- Accepted formats: JPEG, PNG, WebP, HEIC, and HEIF.
 
 ### 4. Image Positioning
 
@@ -57,8 +108,8 @@ Additional cameras will be added over time. Each camera definition describes tha
 
 - A "Print / Export PDF" button triggers the browser's native print dialog.
 - The print layout renders a `PrintSheet` component:
-  - All uploaded patterns are tiled across the paper with 10 mm margins and 6 mm gaps.
-  - The layout automatically chooses 0° or 90° orientation for the largest per-page capacity and adds pages as needed.
+  - All created skins are tiled across the paper with 10 mm margins and 6 mm gaps.
+  - The layout automatically chooses 0° or 90° orientation for the largest single-page capacity.
   - Each panel renders at its exact physical size so the printed skin matches the camera dimensions.
 - The on-screen UI (header, sidebar) is hidden during printing via CSS `@media print`.
 
@@ -76,9 +127,9 @@ Additional cameras will be added over time. Each camera definition describes tha
 
 ### 7. Multiple Skins Per Print
 
-- Every uploaded image is treated as an independently adjustable skin pattern.
-- The layout maximizes patterns per sheet (9 RS1500 patterns on A4) and continues overflow onto additional sheets.
-- The paper-size control displays the maximum patterns per page, current pattern count, and required page count before printing.
+- Every skin slot independently references a colour, pattern, uploaded image, or blank design.
+- The layout maximizes patterns per sheet (9 RS1500 patterns on A4).
+- The paper-size control displays the current and maximum skin count.
 - Creation controls stop accepting skins at the selected paper's single-page capacity; paper sizes that cannot hold the current set are disabled.
 - Empty skin slots remain printable as blank cut templates, and removing a skin requires confirmation.
 
