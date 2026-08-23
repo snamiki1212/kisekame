@@ -1,0 +1,36 @@
+.sheet {
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.panel {
+  position: relative;
+  border: 1px solid #666;
+  overflow: hidden;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.panelLabel {
+  position: absolute;
+  bottom: 3px;
+  right: 4px;
+  font-size: 8px;
+  color: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+@media print {
+  .sheet {
+    box-shadow: none;
+    page-break-after: always;
+  }
+}
