@@ -12,7 +12,7 @@ then export/print a print-ready PDF-quality layout.
 
 | Camera | Status |
 |--------|--------|
-| PENTAX RS-1500 | ✅ Initial target |
+| PENTAX Optio RS1500 | ✅ Initial target |
 
 Additional cameras will be added over time. Each camera definition describes that model's actual skin format; a model may have one shaped template or several panels.
 
@@ -48,6 +48,7 @@ Additional cameras will be added over time. Each camera definition describes tha
 - An image **scale slider** (10%–300%) adjusts the image size within the panel.
 - Each uploaded pattern and panel maintains an independent position and scale.
 - Every uploaded pattern is always visible in the preview; selecting a preview makes its scale control active.
+- Three removable vector starter templates are shown by default so the multi-pattern workflow is visible before upload.
 
 ### 5. Print / PDF Export
 
@@ -114,7 +115,7 @@ digicam-skin-designer/
 
 ---
 
-## Skin Template — PENTAX RS-1500
+## Skin Template — PENTAX Optio RS1500
 
 The RS1500 uses one dedicated front skin, not separate front/back/top/bottom panels. Its outer cutting size is 83.65 × 53.35 mm, with lens, flash, and indicator cut-outs traced from Ricoh's official skin PDF.
 
@@ -122,7 +123,7 @@ The RS1500 uses one dedicated front skin, not separate front/back/top/bottom pan
 
 ## Future Work
 
-- Additional camera models (beyond PENTAX RS-1500).
+- Additional camera models (beyond PENTAX Optio RS1500).
 - Per-panel colour fill / background colour picker.
 - Text overlay on skin panels.
 - Undo / redo history.

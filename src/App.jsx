@@ -1,11 +1,25 @@
 import { useState } from "react";
 import { CAMERAS, PAPER_SIZES } from "./data/cameras";
+import { STARTER_PATTERNS } from "./data/starterPatterns";
 import { SkinCanvas } from "./components/SkinCanvas";
 import { ImageUploader } from "./components/ImageUploader";
 import { getBestPrintLayout, PrintSheet } from "./components/PrintSheet";
 import styles from "./App.module.css";
 
 const DEFAULT_IMAGE_POS = { x: 0, y: 0, scale: 1 };
+
+const createStarterPositions = (camera) =>
+  Object.fromEntries(
+    STARTER_PATTERNS.map((image) => [
+      image.id,
+      Object.fromEntries(
+        camera.panels.map((panel) => [
+          panel.id,
+          { ...DEFAULT_IMAGE_POS, imageId: image.id },
+        ])
+      ),
+    ])
+  );
 
 const readImageFile = (file) =>
   new Promise((resolve, reject) => {
@@ -30,10 +44,12 @@ const readImageFile = (file) =>
 export default function App() {
   const [cameraId, setCameraId] = useState(CAMERAS[0].id);
   const [paperId, setPaperId] = useState(PAPER_SIZES[0].id);
-  const [images, setImages] = useState([]);
-  const [activeImageId, setActiveImageId] = useState(null);
+  const [images, setImages] = useState(STARTER_PATTERNS);
+  const [activeImageId, setActiveImageId] = useState(STARTER_PATTERNS[0].id);
   // imagePositions: { [imageId]: { [panelId]: { x, y, scale, imageId } } }
-  const [imagePositions, setImagePositions] = useState({});
+  const [imagePositions, setImagePositions] = useState(() =>
+    createStarterPositions(CAMERAS[0])
+  );
   const [activePanelId, setActivePanelId] = useState(CAMERAS[0].panels[0].id);
   const [showPrint, setShowPrint] = useState(false);
 
@@ -101,9 +117,9 @@ export default function App() {
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Digicam Skin Designer</h1>
+        <h1 className={styles.title}>PENTAX Optio RS1500 Skin Designer</h1>
         <p className={styles.subtitle}>
-          Design and print custom skins for your digital camera
+          Create, preview, and print custom RS1500 front skins
         </p>
       </header>
 
@@ -117,7 +133,9 @@ export default function App() {
               onChange={(e) => {
                 const nextCamera = CAMERAS.find((c) => c.id === e.target.value);
                 setCameraId(e.target.value);
-                setImagePositions({});
+                setImagePositions(createStarterPositions(nextCamera));
+                setImages(STARTER_PATTERNS);
+                setActiveImageId(STARTER_PATTERNS[0].id);
                 setActivePanelId(nextCamera.panels[0].id);
               }}
               className={styles.select}
@@ -129,11 +147,11 @@ export default function App() {
               ))}
             </select>
             <div className={styles.printSummary}>
-              <strong>最大 {printLayout.capacity} skins / page</strong>
+              <strong>Up to {printLayout.capacity} skins per page</strong>
               <span>
-                現在 {patternCount} skins · {pageCount} page
+                {patternCount} skins · {pageCount} {pageCount === 1 ? "page" : "pages"}
               </span>
-              <span>{printLayout.columns}列 × {printLayout.rows}段{printLayout.rotated ? "（90°回転）" : ""}</span>
+              <span>{printLayout.columns} columns × {printLayout.rows} rows{printLayout.rotated ? " · rotated 90°" : ""}</span>
             </div>
           </div>
 
@@ -269,7 +287,7 @@ export default function App() {
               </div>
             )))}
             {images.length === 0 && (
-              <div className={styles.emptyPreview}>画像をアップロードすると、すべてのFront skinがここに並びます。</div>
+              <div className={styles.emptyPreview}>Upload images to preview every front skin here.</div>
             )}
           </div>
 

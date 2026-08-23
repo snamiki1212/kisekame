@@ -23,7 +23,7 @@ const RS1500_FRONT_PATH = [
 export const CAMERAS = [
   {
     id: "pentax-rs1500",
-    name: "PENTAX RS-1500",
+    name: "PENTAX Optio RS1500",
     brand: "PENTAX",
     templateSource:
       "https://www.ricoh-imaging.co.jp/japan/support/download/digital/skin_rs1500/skin/color07.pdf",

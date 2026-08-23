@@ -1,4 +1,4 @@
-# ADR: Initial Target Camera — PENTAX RS-1500
+# ADR: Initial Target Camera — PENTAX Optio RS1500
 
 **Date:** 2026-08-23
 **Status:** Accepted
@@ -10,7 +10,7 @@ We need to choose the first camera model and define its model-specific skin temp
 
 ## Decision
 
-The first supported camera is the **PENTAX RS-1500**.
+The first supported camera is the **PENTAX Optio RS1500**.
 
 The RS1500 has one dedicated front skin rather than independent front, back,
 top, and bottom panels. The outer cut is 83.65 × 53.35 mm and includes the

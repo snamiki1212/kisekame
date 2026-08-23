@@ -282,8 +282,11 @@
 
   .preview {
     padding: 0;
+    gap: 0;
+    overflow: visible;
   }
 
+  .previewHeading,
   .panelGrid {
     display: none;
   }

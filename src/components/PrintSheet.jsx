@@ -26,12 +26,7 @@ export function getBestPrintLayout(camera, paperSize) {
  * sheet of the chosen paper size. Handles multi-row wrapping.
  */
 export function PrintSheet({ camera, paperSize, images, imagePositions }) {
-  const sheetWidth = paperSize.widthMm * MM_TO_PX;
-  const sheetHeight = paperSize.heightMm * MM_TO_PX;
   const usableWidthMm = paperSize.widthMm - MARGIN_MM * 2;
-  const usableWidth = usableWidthMm * MM_TO_PX;
-  const marginPx = MARGIN_MM * MM_TO_PX;
-  const gapPx = GAP_MM * MM_TO_PX;
   const layout = getBestPrintLayout(camera, paperSize);
   const patterns = images.flatMap((image) =>
     camera.panels.map((item) => ({ image, panel: item }))
@@ -44,19 +39,20 @@ export function PrintSheet({ camera, paperSize, images, imagePositions }) {
 
   return (
     <div className={styles.pages}>
+      <style>{`@page { size: ${paperSize.widthMm}mm ${paperSize.heightMm}mm; margin: 0; }`}</style>
       {pages.map((pagePatterns, pageIndex) => (
         <div
           key={pageIndex}
           className={styles.sheet}
-          style={{ width: sheetWidth, height: sheetHeight }}
+          style={{ width: `${paperSize.widthMm}mm`, height: `${paperSize.heightMm}mm` }}
         >
           <div
             className={styles.content}
             style={{
-              margin: marginPx,
-              gap: gapPx,
-              width: usableWidth,
-              gridTemplateColumns: `repeat(${layout.columns}, ${layout.widthMm * MM_TO_PX}px)`,
+              margin: `${MARGIN_MM}mm`,
+              gap: `${GAP_MM}mm`,
+              width: `${usableWidthMm}mm`,
+              gridTemplateColumns: `repeat(${layout.columns}, ${layout.widthMm}mm)`,
             }}
           >
             {pagePatterns.map(({ panel, image }, patternIndex) => {
@@ -69,14 +65,14 @@ export function PrintSheet({ camera, paperSize, images, imagePositions }) {
             <div
               key={`${image.id}-${panel.id}`}
               className={styles.slot}
-              style={{ width: layout.widthMm * MM_TO_PX, height: layout.heightMm * MM_TO_PX }}
+              style={{ width: `${layout.widthMm}mm`, height: `${layout.heightMm}mm` }}
             >
               <div
                 className={styles.panel}
                 style={{
-                  width: pw,
-                  height: ph,
-                  transform: layout.rotated ? `translateX(${ph}px) rotate(90deg)` : undefined,
+                  width: `${panel.widthMm}mm`,
+                  height: `${panel.heightMm}mm`,
+                  transform: layout.rotated ? `translateX(${panel.heightMm}mm) rotate(90deg)` : undefined,
                 }}
               >
                 <svg viewBox={panel.shape?.viewBox ?? `0 0 ${pw} ${ph}`} className={styles.template} aria-label={`${panel.label}: ${image.name}`}>
