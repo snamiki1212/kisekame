@@ -50,6 +50,7 @@ Additional cameras will be added over time. Each camera definition describes tha
 - Every uploaded pattern is always visible in the preview; selecting a preview makes its scale control active.
 - Three empty skin slots are shown by default so users assign reusable sources to skins rather than creating skins from sources.
 - Users create empty skin slots, then independently assign a reusable solid colour, vector pattern, or JPEG, PNG, WebP, HEIC, or HEIF upload to each slot.
+- Solid colours may be selected from presets or the full colour picker; pattern foreground and background colours are independently customizable.
 - Skin previews are numbered and displayed in rows of three.
 
 ### 5. Print / PDF Export
@@ -79,6 +80,7 @@ Additional cameras will be added over time. Each camera definition describes tha
 - The layout maximizes patterns per sheet (9 RS1500 patterns on A4) and continues overflow onto additional sheets.
 - The paper-size control displays the maximum patterns per page, current pattern count, and required page count before printing.
 - Creation controls stop accepting skins at the selected paper's single-page capacity; paper sizes that cannot hold the current set are disabled.
+- Empty skin slots remain printable as blank cut templates, and removing a skin requires confirmation.
 
 ---
 

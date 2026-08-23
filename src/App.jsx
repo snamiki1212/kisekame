@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { CAMERAS, PAPER_SIZES } from "./data/cameras";
-import { COLOR_TEMPLATES, PATTERN_TEMPLATES } from "./data/starterPatterns";
+import {
+  COLOR_TEMPLATES,
+  createColorAsset,
+  createPatternAsset,
+  PATTERN_TEMPLATES,
+} from "./data/starterPatterns";
 import { SkinCanvas } from "./components/SkinCanvas";
 import { ImageUploader } from "./components/ImageUploader";
 import { getBestPrintLayout, PrintSheet } from "./components/PrintSheet";
@@ -41,17 +46,21 @@ export default function App() {
   const [paperId, setPaperId] = useState(PAPER_SIZES[0].id);
   const [skins, setSkins] = useState(createInitialSkins);
   const [uploads, setUploads] = useState([]);
+  const [customAssets, setCustomAssets] = useState([]);
   const [activeSkinId, setActiveSkinId] = useState(null);
   const [imagePositions, setImagePositions] = useState({});
   const [sourceTab, setSourceTab] = useState("color");
   const [uploadError, setUploadError] = useState("");
+  const [customColor, setCustomColor] = useState("#4a90e2");
+  const [patternForeground, setPatternForeground] = useState("#5c7cfa");
+  const [patternBackground, setPatternBackground] = useState("#f8f9fa");
   const [showPrint, setShowPrint] = useState(false);
 
   const camera = CAMERAS.find((item) => item.id === cameraId);
   const paperSize = PAPER_SIZES.find((item) => item.id === paperId);
   const printLayout = getBestPrintLayout(camera, paperSize);
   const activeSkin = skins.find((skin) => skin.id === activeSkinId) ?? skins[0];
-  const allAssets = [...COLOR_TEMPLATES, ...PATTERN_TEMPLATES, ...uploads];
+  const allAssets = [...COLOR_TEMPLATES, ...PATTERN_TEMPLATES, ...customAssets, ...uploads];
   const getAsset = (assetId) => allAssets.find((asset) => asset.id === assetId);
   const isFull = skins.length >= printLayout.capacity;
 
@@ -66,6 +75,14 @@ export default function App() {
         panel.id, { ...DEFAULT_IMAGE_POS, imageId: asset.id },
       ])),
     }));
+  };
+
+  const assignGeneratedAsset = (asset) => {
+    setCustomAssets((current) => current.some((item) => item.id === asset.id)
+      ? current
+      : [...current, asset]
+    );
+    assignAsset(asset);
   };
 
   const handleImageUpload = async (files) => {
@@ -87,6 +104,7 @@ export default function App() {
   };
 
   const removeSkin = (skinId) => {
+    if (!window.confirm("Remove this skin?")) return;
     setSkins((current) => {
       const next = current.filter((skin) => skin.id !== skinId);
       setActiveSkinId((activeId) => activeId === skinId ? (next[0]?.id ?? null) : activeId);
@@ -119,6 +137,16 @@ export default function App() {
       window.print();
       setShowPrint(false);
     }, 300);
+  };
+
+  const activateSkin = (skin) => {
+    setActiveSkinId(skin.id);
+    const asset = getAsset(skin.assetId);
+    if (asset?.sourceType === "color") setCustomColor(asset.color);
+    if (asset?.sourceType === "pattern") {
+      setPatternForeground(asset.foreground);
+      setPatternBackground(asset.background);
+    }
   };
 
   const selectedAssetId = activeSkin?.assetId;
@@ -172,11 +200,37 @@ export default function App() {
 
               {sourceTab === "color" && <div className={styles.colorGrid}>
                 {COLOR_TEMPLATES.map((asset) => <button key={asset.id} type="button" className={`${styles.colorSwatch} ${selectedAssetId === asset.id ? styles.colorSwatchSelected : ""}`} style={{ background: asset.color }} onClick={() => assignAsset(asset)} aria-label={asset.name} title={asset.name}>{selectedAssetId === asset.id ? "✓" : ""}</button>)}
+                <label className={styles.customColor} title="Custom color">
+                  <input type="color" value={customColor} onChange={(event) => {
+                    setCustomColor(event.target.value);
+                    assignGeneratedAsset(createColorAsset(event.target.value));
+                  }} />
+                  <span>＋</span>
+                </label>
               </div>}
 
-              {sourceTab === "pattern" && <div className={styles.patternGrid}>
-                {PATTERN_TEMPLATES.map((asset) => <button key={asset.id} type="button" className={`${styles.patternChoice} ${selectedAssetId === asset.id ? styles.patternChoiceSelected : ""}`} onClick={() => assignAsset(asset)}><img src={asset.src} alt="" /><span>{asset.name}</span></button>)}
-              </div>}
+              {sourceTab === "pattern" && <>
+                <div className={styles.patternGrid}>
+                  {PATTERN_TEMPLATES.map((asset) => {
+                    const customized = createPatternAsset(asset.patternId, patternForeground, patternBackground);
+                    return <button key={asset.id} type="button" className={`${styles.patternChoice} ${getAsset(selectedAssetId)?.patternId === asset.patternId ? styles.patternChoiceSelected : ""}`} onClick={() => assignGeneratedAsset(customized)}><img src={customized.src} alt="" /><span>{asset.name}</span></button>;
+                  })}
+                </div>
+                <div className={styles.patternColors}>
+                  <label>Pattern <input type="color" value={patternForeground} onChange={(event) => {
+                    const color = event.target.value;
+                    setPatternForeground(color);
+                    const patternId = getAsset(selectedAssetId)?.patternId;
+                    if (patternId) assignGeneratedAsset(createPatternAsset(patternId, color, patternBackground));
+                  }} /></label>
+                  <label>Background <input type="color" value={patternBackground} onChange={(event) => {
+                    const color = event.target.value;
+                    setPatternBackground(color);
+                    const patternId = getAsset(selectedAssetId)?.patternId;
+                    if (patternId) assignGeneratedAsset(createPatternAsset(patternId, patternForeground, color));
+                  }} /></label>
+                </div>
+              </>}
 
               {sourceTab === "upload" && <>
                 <ImageUploader onUpload={handleImageUpload} />
@@ -196,7 +250,7 @@ export default function App() {
             </div>
           )}
 
-          <button className={styles.btnPrint} onClick={handlePrint} disabled={skins.length === 0 || skins.some((skin) => !skin.assetId)}>🖨️ Print / Export PDF</button>
+          <button className={styles.btnPrint} onClick={handlePrint} disabled={skins.length === 0}>🖨️ Print / Export PDF</button>
         </section>
 
         <section className={styles.preview}>
@@ -208,7 +262,7 @@ export default function App() {
             {skins.map((skin, index) => {
               const asset = getAsset(skin.assetId);
               const panel = camera.panels[0];
-              return <div key={skin.id} className={`${styles.panelWrapper} ${activeSkin?.id === skin.id ? styles.panelWrapperActive : ""}`} onMouseDown={() => setActiveSkinId(skin.id)}>
+              return <div key={skin.id} className={`${styles.panelWrapper} ${activeSkin?.id === skin.id ? styles.panelWrapperActive : ""}`} onMouseDown={() => activateSkin(skin)}>
                 <div className={styles.patternHeader}><strong>Skin {String(index + 1).padStart(2, "0")}</strong><button type="button" className={styles.removeSkin} onClick={(event) => { event.stopPropagation(); removeSkin(skin.id); }} aria-label={`Remove Skin ${index + 1}`}>×</button></div>
                 <SkinCanvas panel={panel} image={asset} imagePos={imagePositions[skin.id]?.[panel.id] ?? DEFAULT_IMAGE_POS} onImagePosChange={(pos) => handlePosChange(skin.id, panel.id, { ...pos, imageId: skin.assetId })} />
               </div>;
