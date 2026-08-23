@@ -98,7 +98,7 @@
 
 .sourceTabs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   padding: 3px;
   border-radius: 7px;
   background: #e9ecef;
@@ -143,6 +143,46 @@
 .colorSwatch:disabled {
   cursor: not-allowed;
   opacity: 0.3;
+}
+
+.patternGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.patternChoice {
+  min-width: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: #fff;
+  color: #555;
+  font-size: 10px;
+}
+
+.patternChoice img {
+  display: block;
+  width: 100%;
+  height: 38px;
+  object-fit: cover;
+}
+
+.patternChoice span {
+  display: block;
+  padding: 3px;
+}
+
+.patternChoiceSelected {
+  border-color: #4a90e2;
+}
+
+.uploadError {
+  padding: 7px;
+  border-radius: 5px;
+  background: #fff0f0;
+  color: #c92a2a;
+  font-size: 11px;
 }
 
 .imageList {
@@ -256,6 +296,11 @@
   background: #2e2e5e;
 }
 
+.btnPrint:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
 .btnSecondary {
   padding: 4px 10px;
   border: 1px solid #ccc;
@@ -325,6 +370,38 @@
   color: #777;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.removeSkin {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: #eee;
+  color: #666;
+  font-size: 16px;
+}
+
+.addSkin {
+  width: 332px;
+  min-height: 260px;
+  align-self: stretch;
+  border: 2px dashed #bbb;
+  border-radius: 8px;
+  background: transparent;
+  color: #777;
+  font-size: 13px;
+}
+
+.addSkin span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 32px;
+}
+
+.addSkin:disabled {
+  cursor: not-allowed;
+  opacity: 0.25;
 }
 
 .emptyPreview {

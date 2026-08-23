@@ -25,11 +25,11 @@ export function getBestPrintLayout(camera, paperSize) {
  * PrintSheet renders a print-ready layout of multiple skin panels on a single
  * sheet of the chosen paper size. Handles multi-row wrapping.
  */
-export function PrintSheet({ camera, paperSize, images, imagePositions }) {
+export function PrintSheet({ camera, paperSize, skins }) {
   const usableWidthMm = paperSize.widthMm - MARGIN_MM * 2;
   const layout = getBestPrintLayout(camera, paperSize);
-  const patterns = images.flatMap((image) =>
-    camera.panels.map((item) => ({ image, panel: item }))
+  const patterns = skins.flatMap((skin) =>
+    camera.panels.map((item) => ({ skin, panel: item }))
   );
   const pages = Array.from(
     { length: Math.max(1, Math.ceil(patterns.length / layout.capacity)) },
@@ -55,15 +55,16 @@ export function PrintSheet({ camera, paperSize, images, imagePositions }) {
               gridTemplateColumns: `repeat(${layout.columns}, ${layout.widthMm}mm)`,
             }}
           >
-            {pagePatterns.map(({ panel, image }, patternIndex) => {
+            {pagePatterns.map(({ panel, skin }, patternIndex) => {
           const pw = panel.widthMm * MM_TO_PX;
           const ph = panel.heightMm * MM_TO_PX;
-          const pos = imagePositions?.[image.id]?.[panel.id] ?? { x: 0, y: 0, scale: 1 };
+          const image = skin.image;
+          const pos = skin.positions?.[panel.id] ?? { x: 0, y: 0, scale: 1 };
           const shapeId = `print-shape-${camera.id}-${panel.id}-${pageIndex}-${patternIndex}`;
 
           return (
             <div
-              key={`${image.id}-${panel.id}`}
+              key={`${skin.id}-${panel.id}`}
               className={styles.slot}
               style={{ width: `${layout.widthMm}mm`, height: `${layout.heightMm}mm` }}
             >
@@ -75,7 +76,7 @@ export function PrintSheet({ camera, paperSize, images, imagePositions }) {
                   transform: layout.rotated ? `translateX(${panel.heightMm}mm) rotate(90deg)` : undefined,
                 }}
               >
-                <svg viewBox={panel.shape?.viewBox ?? `0 0 ${pw} ${ph}`} className={styles.template} aria-label={`${panel.label}: ${image.name}`}>
+                <svg viewBox={panel.shape?.viewBox ?? `0 0 ${pw} ${ph}`} className={styles.template} aria-label={`${panel.label}: ${image?.name ?? "Empty"}`}>
                 <defs>
                   <clipPath id={shapeId} clipPathUnits="userSpaceOnUse">
                     <path

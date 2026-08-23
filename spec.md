@@ -48,8 +48,8 @@ Additional cameras will be added over time. Each camera definition describes tha
 - An image **scale slider** (10%–300%) adjusts the image size within the panel.
 - Each uploaded pattern and panel maintains an independent position and scale.
 - Every uploaded pattern is always visible in the preview; selecting a preview makes its scale control active.
-- Three removable vector starter templates are shown by default so the multi-pattern workflow is visible before upload.
-- Users choose between multi-select solid-colour templates and JPEG, PNG, WebP, HEIC, or HEIF uploads.
+- Three empty skin slots are shown by default so users assign reusable sources to skins rather than creating skins from sources.
+- Users create empty skin slots, then independently assign a reusable solid colour, vector pattern, or JPEG, PNG, WebP, HEIC, or HEIF upload to each slot.
 - Skin previews are numbered and displayed in rows of three.
 
 ### 5. Print / PDF Export
