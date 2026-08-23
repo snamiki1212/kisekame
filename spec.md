@@ -14,7 +14,7 @@ then export/print a print-ready PDF-quality layout.
 |--------|--------|
 | PENTAX RS-1500 | ✅ Initial target |
 
-Additional cameras will be added over time. Each camera definition includes named skin panels with physical dimensions in millimetres.
+Additional cameras will be added over time. Each camera definition describes that model's actual skin format; a model may have one shaped template or several panels.
 
 ---
 
@@ -28,12 +28,14 @@ Additional cameras will be added over time. Each camera definition includes name
 ### 2. Skin Preview
 
 - Each skin panel is displayed as a canvas element scaled proportionally from its physical millimetre dimensions.
-- Panels are labelled (e.g. Front, Back, Top, Bottom).
+- Panels are labelled according to the camera-specific template.
+- Non-rectangular templates and hardware cut-outs are clipped from the artwork.
 - Physical dimensions (mm) are shown beneath each panel.
 
 ### 3. Image Upload
 
-- Users can upload an image to apply to skin panels.
+- Users can upload multiple images at once or over several upload actions.
+- Uploaded images can be selected, assigned to a skin, and removed independently.
 - Supported methods:
   - **Drag-and-drop** onto the upload zone.
   - **File picker** (click to browse).
@@ -69,7 +71,7 @@ Additional cameras will be added over time. Each camera definition includes name
 
 ### 7. Multiple Skins Per Print
 
-- All skin panels for the selected camera are rendered on the single print sheet.
+- All skin templates for the selected camera are rendered on the single print sheet.
 - The layout automatically wraps panels to fit the chosen paper size.
 
 ---
@@ -90,7 +92,7 @@ Additional cameras will be added over time. Each camera definition includes name
 
 ```
 digicam-skin-designer/
-├── ADR/                        # Architecture Decision Records
+├── adr/                        # Architecture Decision Records
 ├── src/
 │   ├── data/
 │   │   └── cameras.js          # Camera and paper-size definitions
@@ -110,16 +112,9 @@ digicam-skin-designer/
 
 ---
 
-## Physical Skin Dimensions — PENTAX RS-1500
+## Skin Template — PENTAX RS-1500
 
-Approximate panel dimensions (may need adjustment after physical measurement):
-
-| Panel | Width (mm) | Height (mm) |
-|-------|-----------|------------|
-| Front | 94 | 58 |
-| Back | 94 | 58 |
-| Top | 94 | 20 |
-| Bottom | 94 | 20 |
+The RS1500 uses one dedicated front skin, not separate front/back/top/bottom panels. Its outer cutting size is 83.65 × 53.35 mm, with lens, flash, and indicator cut-outs traced from Ricoh's official skin PDF.
 
 ---
 
