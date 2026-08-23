@@ -38,7 +38,14 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
+  overflow: visible;
+}
+
+.sidebarContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: visible;
 }
 
 .card {
@@ -71,10 +78,9 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 8px;
-  border-radius: 6px;
-  background: #eef5ff;
-  color: #31577f;
+  padding: 2px 2px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  color: #444;
   font-size: 11px;
 }
 
@@ -111,33 +117,56 @@
   gap: 8px;
 }
 
-.selectedSkinHeading strong {
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: var(--pink);
-  color: #fff;
-  font-size: 11px;
-}
-
-.selectedSkinSummary {
+.skinIdentity {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 7px;
-  min-height: 30px;
-  padding: 7px 9px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
   color: var(--ink);
   font-size: 11px;
   font-weight: 700;
 }
 
-.selectedSkinSummary > span:nth-child(2) {
+.skinLabel {
+  display: inline-block;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--pink);
+  font-size: 11px;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.skinLabelSelected {
+  background: var(--pink);
+  color: #fff;
+}
+
+.skinName {
   min-width: 0;
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.skinSelect {
+  width: 100%;
+  padding: 9px 34px 9px 11px;
+  border: 1px solid color-mix(in srgb, var(--pink) 45%, var(--border));
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.skinSelect:focus-visible {
+  border-color: var(--pink);
+  outline: 2px solid color-mix(in srgb, var(--pink) 22%, transparent);
+  outline-offset: 1px;
 }
 
 .randomizeButton {
@@ -156,14 +185,6 @@
   border-color: var(--pink);
   background: var(--pink);
   color: #fff;
-}
-
-.selectedSkinDot {
-  width: 11px;
-  height: 11px;
-  flex: 0 0 auto;
-  border: 1px solid var(--border);
-  border-radius: 50%;
 }
 
 .sourceTab,
@@ -595,19 +616,6 @@
   border-color: #4a90e2;
 }
 
-.selectedBadge {
-  display: inline-block;
-  margin-left: 6px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: var(--pink);
-  color: #fff !important;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: .03em;
-  vertical-align: 1px;
-}
-
 .patternHeader {
   display: flex;
   align-items: baseline;
@@ -773,8 +781,8 @@
 .headerSeo > p { color: var(--header-ink); font-size: 12px; font-weight: 650; line-height: 1.5; }
 .supportedCameras { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
 .supportedCameras h2 { flex: none; color: var(--header-subtitle); font-size: 9px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
-.supportedCameras ul { display: flex; flex-wrap: wrap; gap: 5px; list-style: none; }
-.supportedCameras li { padding: 3px 7px; border: 1px solid color-mix(in srgb, var(--pink) 30%, var(--border)); border-radius: 999px; background: var(--pink-soft); color: var(--pink); font-size: 9px; font-weight: 800; }
+.supportedCameras ul { display: flex; flex-wrap: wrap; gap: 4px 7px; color: var(--header-ink); font-size: 9px; font-weight: 750; list-style: none; }
+.supportedCameras li + li::before { margin-right: 7px; color: var(--header-subtitle); content: "·"; }
 .headerActions { display: flex; align-items: center; gap: 18px; margin-left: auto; }
 .infoNav { display: flex; align-items: center; gap: 4px; }
 .infoNav button { padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--header-ink); font-size: 11px; font-weight: 750; }
@@ -789,12 +797,12 @@
 .app[data-theme="dark"] .switchTrack { border-color: var(--pink); background: #2b1020; }
 .app[data-theme="dark"] .switchThumb { transform: translateX(19px); background: var(--pink); color: #fff; }
 
-.sidebar { width: 300px; padding: 20px 20px 96px; gap: 14px; background: color-mix(in srgb, var(--pink-soft) 20%, var(--surface)); border-color: color-mix(in srgb, var(--pink) 18%, var(--border)); }
+.sidebar { width: 300px; padding: 20px; gap: 0; background: color-mix(in srgb, var(--pink-soft) 20%, var(--surface)); border-color: color-mix(in srgb, var(--pink) 18%, var(--border)); }
 .card { gap: 10px; padding: 15px; border-color: color-mix(in srgb, var(--pink) 16%, var(--border)); border-radius: 16px; background: var(--surface-raised); box-shadow: 0 4px 18px #df43850d; }
 .cardTitle,.previewTitle,.patternHeader { color: var(--ink); }
 .cardTitle { font-weight: 800; }
 .select { padding: 9px 11px; border-color: var(--border); border-radius: 10px; background: var(--surface); color: var(--ink); }
-.printSummary { gap: 4px; padding: 10px; border-radius: 10px; background: var(--lime-soft); color: var(--ink); }
+.printSummary { gap: 4px; padding: 2px 2px 12px; border-color: var(--border); color: var(--ink); }
 .capacityTrack { height: 6px; background: color-mix(in srgb, var(--ink) 15%, transparent); }
 .capacityTrack span { border-radius: inherit; background: var(--pink); }
 .sourceTabs { gap: 3px; padding: 4px; border-radius: 11px; background: var(--surface-soft); }
@@ -814,28 +822,15 @@
 .thumbImg { border-color: var(--border); border-radius: 7px; }
 .removeImage { border-color: var(--border); background: transparent; color: var(--ink-muted); }
 .slider { accent-color: var(--pink); }
-.btnPrint { position: fixed; z-index: 20; bottom: max(20px, env(safe-area-inset-bottom)); left: 20px; width: 260px; overflow: hidden; padding: 13px; border-radius: 13px; background: var(--pink); color: #fff; font-weight: 800; box-shadow: 0 5px 0 #083920, 0 0 0 8px color-mix(in srgb, var(--surface) 88%, transparent); transition: transform .15s, box-shadow .15s; animation: printGlow 2.4s ease-in-out infinite; }
-.btnPrint::after { position: absolute; top: -70%; left: -35%; width: 24%; height: 240%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .78), transparent); content: ""; pointer-events: none; transform: rotate(22deg); animation: printShine 2.4s ease-in-out infinite; }
+.printDock { position: sticky; z-index: 5; top: calc(100dvh - 93px - env(safe-area-inset-bottom)); width: calc(100% + 40px); flex: 0 0 auto; margin-inline: -20px; margin-bottom: calc(-93px - env(safe-area-inset-bottom)); padding: 12px 20px calc(28px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); background: var(--surface); }
+.btnPrint { position: relative; width: 100%; height: 52px; margin: 0; padding: 0 16px; border-radius: 14px; background: var(--pink); color: #fff; font-size: 15px; font-weight: 850; box-shadow: 0 5px 0 #083920; transition: background-color .16s ease, transform .16s ease, box-shadow .16s ease; }
 .app[data-theme="dark"] .btnPrint { background: var(--pink); color: #fff; }
-.btnPrint:hover { transform: translateY(-1px); background: #c92f72; box-shadow: 0 7px 0 #083920; }
-.app[data-theme="dark"] .btnPrint:hover { background: #ef5f9d; }
-.btnPrint:disabled { animation: none; }
-.btnPrint:disabled::after { display: none; }
-
-@keyframes printGlow {
-  0%, 100% { box-shadow: 0 5px 0 #083920, 0 0 0 8px color-mix(in srgb, var(--surface) 88%, transparent); }
-  50% { box-shadow: 0 5px 0 #083920, 0 0 0 8px color-mix(in srgb, var(--surface) 88%, transparent), 0 0 24px color-mix(in srgb, var(--pink) 72%, transparent); }
-}
-
-@keyframes printShine {
-  0%, 30% { left: -35%; opacity: 0; }
-  42% { opacity: 1; }
-  62%, 100% { left: 115%; opacity: 0; }
-}
+.btnPrint:hover:not(:disabled) { transform: translateY(-2px); background: #c92f72; box-shadow: 0 7px 0 #083920; }
+.app[data-theme="dark"] .btnPrint:hover:not(:disabled) { background: #ef5f9d; }
+.btnPrint:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #083920; transition-duration: .06s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .btnPrint,
-  .btnPrint::after { animation: none; }
+  .btnPrint { transition: none; }
 }
 
 .preview { padding: 30px; gap: 20px; }
@@ -917,8 +912,7 @@
   .headerSeo { order: 3; min-width: 100%; max-width: none; }
   .main { flex-direction: column; }
   .sidebar { width: 100%; padding-bottom: 20px; overflow: visible; border-right: 0; border-bottom: 1px solid var(--border); }
-  .main { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
-  .btnPrint { right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); left: 16px; width: auto; }
+  .printDock { width: calc(100% + 40px); }
   .preview { padding: 20px; }
   .panelGrid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
   .cameraInfoList { grid-template-columns: 1fr; }
