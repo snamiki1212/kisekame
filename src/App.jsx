@@ -19,7 +19,19 @@ const KISEKAME_LOGO = createPatternAsset("kisekame", KISEKAME_PINK, "#ffe7f1");
 const RANDOM_PATTERN_COLORS = ["#df4385", "#97cd3f", "#b82f63", "#3157a4", "#147d74", "#184d3b", "#c6b4e9", "#20263a"];
 const RANDOM_PATTERN_BACKGROUNDS = ["#ffe7f1", "#eaf6d5", "#ffc2d1", "#ffe08a", "#86d3e8", "#c6b4e9"];
 const RANDOM_PATTERNS = PATTERN_TEMPLATES.filter((asset) => asset.patternId !== "kisekame");
-const INFO_PAGES = { about: "About KISEKAME", guide: "How to use", print: "Print guide" };
+const INFO_PAGES = { about: "About KISEKAME", camera: "About the Optio RS1500", guide: "How to use & print" };
+const normalizeInfoPage = (page) => page === "print" ? "guide" : page;
+const RS1500_LINKS = {
+  products: [
+    ["rs1500English", "https://www.ricoh-imaging.co.jp/english/products/optio-rs1500/"],
+    ["rs1500Japanese", "https://www.ricoh-imaging.co.jp/japan/products/optio-rs1500/"],
+  ],
+  sheets: [
+    ["sheetCollection", "https://www.ricoh-imaging.co.jp/japan/support/download/digital/skin_collection_rs1500.html"],
+    ["gloomySheets", "https://www.ricoh-imaging.co.jp/japan/products/optio-rs1500/changestyle_gloomy.html"],
+    ["galsSheets", "https://www.ricoh-imaging.co.jp/japan/products/optio-rs1500/changestyle_gals.html"],
+  ],
+};
 const createSkin = (assetId = null) => ({ id: crypto.randomUUID(), assetId });
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
 const createRandomAsset = () => {
@@ -99,7 +111,8 @@ export default function App() {
   const [showPrint, setShowPrint] = useState(false);
   const [infoPage, setInfoPage] = useState(() => {
     const page = new URLSearchParams(window.location.search).get("page");
-    return INFO_PAGES[page] ? page : null;
+    const normalizedPage = normalizeInfoPage(page);
+    return INFO_PAGES[normalizedPage] ? normalizedPage : null;
   });
   const t = (key, variables = {}) => Object.entries(variables).reduce(
     (text, [name, value]) => text.replace(`{${name}}`, value),
@@ -113,7 +126,8 @@ export default function App() {
   useEffect(() => {
     const syncInfoPage = () => {
       const page = new URLSearchParams(window.location.search).get("page");
-      setInfoPage(INFO_PAGES[page] ? page : null);
+      const normalizedPage = normalizeInfoPage(page);
+      setInfoPage(INFO_PAGES[normalizedPage] ? normalizedPage : null);
     };
     window.addEventListener("popstate", syncInfoPage);
     return () => window.removeEventListener("popstate", syncInfoPage);
@@ -277,8 +291,8 @@ export default function App() {
         <div className={styles.headerActions}>
           <nav className={styles.infoNav} aria-label="Information">
             <button type="button" onClick={() => openInfoPage("about")}>{t("about")}</button>
+            <button type="button" onClick={() => openInfoPage("camera")}>{t("camera")}</button>
             <button type="button" onClick={() => openInfoPage("guide")}>{t("guide")}</button>
-            <button type="button" onClick={() => openInfoPage("print")}>{t("printGuide")}</button>
           </nav>
           <span className={styles.tagline}>{t("tagline")}</span>
           <select className={styles.languageSelect} value={language} onChange={(event) => {
@@ -442,6 +456,7 @@ export default function App() {
             {infoPage === "about" && <>
               <p>{t("aboutBody")}</p>
               <div className={styles.infoCallout}><strong>{t("aboutStrong")}</strong><span>{t("aboutCallout")}</span></div>
+              <div className={styles.nameOrigin}><strong>{t("nameOriginTitle")}</strong><span>{t("nameOriginBody")}</span></div>
               <div className={styles.creatorCard}>
                 <img src="/snamiki1212-avatar.jpg" alt="snamiki1212" />
                 <div><span>{t("creator")}</span><strong>snamiki1212</strong></div>
@@ -458,13 +473,24 @@ export default function App() {
               <li><strong>{t("step3Title")}</strong><span>{t("step3Body")}</span></li>
               <li><strong>{t("step4Title")}</strong><span>{t("step4Body")}</span></li>
             </ol>}
-            {infoPage === "print" && <>
+            {infoPage === "camera" && <>
+              <p>{t("cameraBody")}</p>
+              <div className={styles.cameraSpecs}>{t("cameraSpecs")}</div>
+              {[["productInfo", RS1500_LINKS.products], ["skinResources", RS1500_LINKS.sheets]].map(([heading, links]) => <section key={heading} className={styles.cameraLinkSection}>
+                <h3>{t(heading)}</h3>
+                <div className={styles.cameraLinks}>
+                  {links.map(([label, href]) => <a key={href} href={href} target="_blank" rel="noreferrer"><span>{t(label)}</span><span aria-hidden="true">↗</span></a>)}
+                </div>
+              </section>)}
+            </>}
+            {infoPage === "guide" && <section className={styles.guidePrintSection}>
+              <h3>{t("guidePrintTitle")}</h3>
               <p>{t("printBody")}</p>
               <div className={styles.printTips}><span>{t("printTip1", { paper: paperSize.label })}</span><span>{t("printTip2")}</span><span>{t("printTip3")}</span><span>{t("printTip4")}</span></div>
-            </>}
+            </section>}
           </div>
           <div className={styles.infoModalFooter}>
-            {Object.keys(INFO_PAGES).map((id) => <button key={id} type="button" className={infoPage === id ? styles.infoPageActive : ""} onClick={() => openInfoPage(id)}>{t(id === "print" ? "printGuide" : id)}</button>)}
+            {Object.keys(INFO_PAGES).map((id) => <button key={id} type="button" className={infoPage === id ? styles.infoPageActive : ""} onClick={() => openInfoPage(id)}>{t(id)}</button>)}
           </div>
         </section>
       </div>}
