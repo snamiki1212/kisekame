@@ -16,40 +16,8 @@ and carries descriptive search terms. The preferred lockup is:
 > **KISEKAME**<br>
 > Digicam Skin Designer
 
-### Brand personality
-
-Kisekame should feel like a small creative playground rather than a technical
-print-production utility. The experience should be:
-
-- **pop and kawaii:** cheerful, friendly, and collectible without becoming childish;
-- **Heisei retro:** inspired by late-1990s and 2000s stationery, purikura,
-  translucent electronics, compact cameras, and decorated flip phones;
-- **creative:** choosing colours, patterns, and photos should feel like playing with stickers;
-- **light:** white space and bright accents should dominate over grey tool chrome;
-- **approachable:** controls should use familiar language and direct manipulation;
-- **precise underneath:** physical sizing and print accuracy remain dependable, but are not the visual personality.
-
-Avoid enterprise-dashboard styling, dense toolbars, dark industrial palettes,
-technical jargon, and excessive borders. Prefer rounded shapes, generous white
-space, large colour swatches, friendly microcopy, and small moments of playful
-feedback when a skin is added or changed.
-
-### Colour direction
-
-- White is the dominant canvas and card colour.
-- Bright colour is used generously enough to feel pop and creative, without
-  reducing the white-space-led lightness.
-- Text uses a warm tinted near-black rather than a cold tool-like black.
-- Supporting colours represent creative variety rather than dashboard statuses.
-- The adopted **Heisei Deco** palette uses Deep Green `#083920`, Deco Pink `#DF4385`, and
-  Sticker Lime `#97CD3F` on a white or Milky White base.
-- Deep Green carries text and dependable actions; Pink and Lime carry selection,
-  decoration, and playful creative feedback.
-- Text and interactive controls must meet WCAG AA independently of decorative
-  swatches.
-
-Palette candidates and the eventual colour decision are recorded in
-[`adr/20260823_brand-identity`](adr/20260823_brand-identity/README.md).
+The visual language, UI principles, layout, interaction states, and responsive
+behaviour are defined in [`DESIGN.md`](DESIGN.md).
 
 ## Overview
 
@@ -165,7 +133,8 @@ digicam-skin-designer/
 │   └── main.jsx
 ├── index.html
 ├── package.json
-├── spec.md                     # This document
+├── DESIGN.md                   # Visual and interaction design guidelines
+├── SPEC.md                     # This document
 └── vite.config.js
 ```
 

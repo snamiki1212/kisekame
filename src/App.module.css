@@ -708,6 +708,9 @@
 .infoCallout { display: flex; flex-direction: column; gap: 5px; margin-top: 22px; padding: 18px; border-radius: 16px; background: var(--pink-soft); }
 .infoCallout strong { color: var(--pink); font-size: 15px; }
 .infoCallout span { color: var(--ink-muted); font-size: 12px; line-height: 1.5; }
+.nameOrigin { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; padding: 16px 18px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+.nameOrigin strong { color: var(--ink); font-size: 14px; }
+.nameOrigin span { color: var(--ink-muted); font-size: 12px; line-height: 1.6; }
 .creatorCard { display: grid; grid-template-columns: 58px 1fr; gap: 12px; margin-top: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
 .creatorCard > img { width: 58px; height: 58px; border: 2px solid var(--ink); border-radius: 16px; object-fit: cover; }
 .creatorCard > div:nth-child(2) { display: flex; flex-direction: column; justify-content: center; gap: 2px; }
@@ -716,12 +719,21 @@
 .creatorLinks { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
 .creatorLinks a { padding: 6px 9px; border-radius: 999px; background: var(--lime-soft); color: var(--ink); font-size: 10px; font-weight: 800; text-decoration: none; }
 .creatorLinks a:hover { background: var(--pink); color: #fff; }
+.cameraSpecs { margin-top: 18px; padding: 13px 15px; border-radius: 13px; background: var(--lime-soft); color: var(--ink); font-size: 12px; font-weight: 800; line-height: 1.5; }
+.cameraLinkSection { margin-top: 22px; }
+.cameraLinkSection h3 { margin-bottom: 9px; color: var(--ink); font-size: 13px; }
+.cameraLinks { display: grid; gap: 8px; }
+.cameraLinks a { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 750; line-height: 1.35; text-decoration: none; }
+.cameraLinks a:hover { border-color: var(--pink); background: var(--pink-soft); color: var(--pink); }
 .guideSteps { display: grid; gap: 12px; list-style: none; counter-reset: guide; }
 .guideSteps li { position: relative; display: flex; flex-direction: column; gap: 3px; min-height: 58px; padding: 12px 12px 12px 58px; border: 1px solid var(--border); border-radius: 14px; counter-increment: guide; }
 .guideSteps li::before { content: counter(guide); position: absolute; top: 10px; left: 12px; display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; background: var(--pink); color: #fff; font-weight: 900; }
 .guideSteps strong { font-size: 13px; }
 .guideSteps span { color: var(--ink-muted); font-size: 11px; line-height: 1.45; }
-.printTips { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 22px; }
+.guidePrintSection { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--border); }
+.guidePrintSection h3 { margin-bottom: 8px; color: var(--ink); font-size: 15px; }
+.guidePrintSection p { color: var(--ink-muted); font-size: 12px; line-height: 1.6; }
+.printTips { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 14px; }
 .printTips span { padding: 14px; border-radius: 12px; background: var(--lime-soft); font-size: 12px; font-weight: 800; }
 .infoModalFooter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; border-top: 1px solid var(--border); }
 .infoModalFooter button { min-width: 0; padding: 9px 5px; border: 0; border-radius: 9px; background: transparent; color: var(--ink-muted); font-size: 10px; font-weight: 800; }
