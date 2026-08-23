@@ -60,6 +60,10 @@ export function PrintSheet({ camera, paperSize, skins }) {
           const ph = panel.heightMm * MM_TO_PX;
           const image = skin.image;
           const pos = skin.positions?.[panel.id] ?? { x: 0, y: 0, scale: 1 };
+          const imageWidthPx = (image?.width ?? 0) * pos.scale;
+          const imageHeightPx = (image?.height ?? 0) * pos.scale;
+          const imageX = image?.sourceType === "pattern" ? (pw - imageWidthPx) / 2 + pos.x : pos.x;
+          const imageY = image?.sourceType === "pattern" ? (ph - imageHeightPx) / 2 + pos.y : pos.y;
           const shapeId = `print-shape-${camera.id}-${panel.id}-${pageIndex}-${patternIndex}`;
 
           return (
@@ -91,10 +95,10 @@ export function PrintSheet({ camera, paperSize, skins }) {
                   {image && (
                     <image
                       href={image.src}
-                      x={pos.x / MM_TO_PX * (panel.shape?.width / panel.widthMm || 1)}
-                      y={pos.y / MM_TO_PX * (panel.shape?.height / panel.heightMm || 1)}
-                      width={image.width * pos.scale / MM_TO_PX * (panel.shape?.width / panel.widthMm || 1)}
-                      height={image.height * pos.scale / MM_TO_PX * (panel.shape?.height / panel.heightMm || 1)}
+                      x={imageX / MM_TO_PX * (panel.shape?.width / panel.widthMm || 1)}
+                      y={imageY / MM_TO_PX * (panel.shape?.height / panel.heightMm || 1)}
+                      width={imageWidthPx / MM_TO_PX * (panel.shape?.width / panel.widthMm || 1)}
+                      height={imageHeightPx / MM_TO_PX * (panel.shape?.height / panel.heightMm || 1)}
                       preserveAspectRatio="none"
                     />
                   )}
