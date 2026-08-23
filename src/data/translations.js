@@ -23,6 +23,7 @@ const en = {
   aboutBody: "KISEKAME is a browser-based skin designer for the PENTAX Optio RS1500, RS1000, and LS465. Mix colors, playful patterns, and your own artwork to make printable camera skins for supported models.",
   aboutStrong: "Completely free and ad-free.", aboutCallout: "The creator is an engineer who owns an Optio RS1500 and originally built KISEKAME as a quick tool for personal use. It is kept free and ad-free so anyone can enjoy it just as easily.",
   nameOriginTitle: "Why “Kisekame”?", nameOriginBody: "The name comes from the Japanese phrase 着せ替えカメラ (kisekae camera), meaning a camera that can change its outfit. Kisekame combines that idea into one short name.",
+  ossTitle: "Open source", ossBody: "KISEKAME is open-source software. You can view the source code, report issues, and contribute improvements on GitHub.",
   creator: "Created by", repository: "Source repository", github: "GitHub", twitter: "X / Twitter",
   cameraBody: "KISEKAME supports PENTAX Optio cameras with interchangeable dress-up sheets. Choose a model below to view its official resources.", supported: "Supported",
   rs1500Body: "The original KISEKAME camera, with a replaceable front dress-up sheet.", rs1500Specs: "Skin size: 83.65 × 53.35 mm",
@@ -37,7 +38,7 @@ const en = {
   step3Title: "Adjust it", step3Body: "Drag the artwork and use Scale until the crop feels right.", step4Title: "Get your skin", step4Body: "Select Get Free Skin to check the finished sheet and save it as a PDF.",
   guidePrintTitle: "Printing accurately",
   printBody: "Print at 100% or “Actual size.” Turn off “Fit to page” so the cutting size stays accurate.",
-  printTip1: "① Use {paper} paper", printTip2: "② Print at actual size", printTip3: "③ Cut along the outline", printTip4: "④ Check the fit before attaching",
+  printTip1: "① Use your selected paper size", printTip2: "② Print at actual size", printTip3: "③ Cut along the outline", printTip4: "④ Check the fit before attaching",
   uploadLabel: "Upload image", dropHere: "Drop images here", dragDrop: "Drag & drop JPEG, PNG, WebP, or HEIC",
 };
 
@@ -51,6 +52,7 @@ const ja = {
   aboutBody: "KISEKAMEは、PENTAX Optio RS1500・RS1000・LS465用のスキンをブラウザでデザインできるサービスです。カラーやパターン、自分の画像を組み合わせて、対応機種の印刷用スキンを作れます。",
   aboutStrong: "完全無料・広告なしで利用できます。", aboutCallout: "作者はOptio RS1500を愛用するエンジニアで、自分用のツールとしてサクッと作ったのがKISEKAMEの始まりです。誰でも気軽に使えるよう、無料・広告なしで公開しています。",
   nameOriginTitle: "Kisekameの名前の由来", nameOriginBody: "「着せ替えカメラ（きせかえカメラ）」を一つの短い名前にしたのがKisekameです。服を選ぶように、カメラの見た目も自由に着せ替えるという意味を込めています。",
+  ossTitle: "オープンソース", ossBody: "KISEKAMEはオープンソースソフトウェアです。ソースコードの閲覧、不具合の報告、改善への参加はGitHubから行えます。",
   creator: "作成者", repository: "ソースリポジトリ", github: "GitHub", twitter: "X / Twitter",
   cameraBody: "KISEKAMEは、着せ替え用シートに対応したPENTAX Optioシリーズをサポートしています。各機種の公式情報・配布素材はこちらから確認できます。", supported: "対応済み",
   rs1500Body: "KISEKAMEが最初に対応した、前面シートを交換できるモデルです。", rs1500Specs: "スキンサイズ：83.65 × 53.35 mm",
@@ -65,7 +67,7 @@ const ja = {
   step3Title: "調整する", step3Body: "画像をドラッグし、拡大率で見え方を整えます。", step4Title: "スキンを保存する", step4Body: "「FREE スキンをGET」から完成イメージを確認し、そのままPDFで保存できます。",
   guidePrintTitle: "正確に印刷するには",
   printBody: "印刷倍率は100%または「実際のサイズ」を指定してください。「用紙に合わせる」はオフにするとカットサイズを正確に保てます。",
-  printTip1: "① {paper}用紙を使用", printTip2: "② 実際のサイズで印刷", printTip3: "③ 外周線に沿ってカット", printTip4: "④ 貼る前にサイズを確認",
+  printTip1: "① 選択したサイズの用紙を使用", printTip2: "② 実際のサイズで印刷", printTip3: "③ 外周線に沿ってカット", printTip4: "④ 貼る前にサイズを確認",
   uploadLabel: "画像をアップロード", dropHere: "ここに画像をドロップ", dragDrop: "JPEG、PNG、WebP、HEICをドラッグ＆ドロップ",
 };
 
@@ -79,6 +81,7 @@ const ko = {
   aboutBody: "KISEKAME는 PENTAX Optio RS1500, RS1000, LS465용 스킨을 브라우저에서 디자인하는 서비스입니다. 컬러, 패턴, 직접 올린 이미지를 조합해 지원 모델의 인쇄용 카메라 스킨을 만들 수 있습니다.",
   aboutStrong: "완전 무료이며 광고가 없습니다.", aboutCallout: "제작자는 Optio RS1500을 소유한 엔지니어로, 개인적으로 쓸 간단한 도구가 필요해 KISEKAME를 만들었습니다. 누구나 부담 없이 즐길 수 있도록 무료·무광고로 공개하고 있습니다.",
   nameOriginTitle: "왜 ‘Kisekame’인가요?", nameOriginBody: "이 이름은 옷을 갈아입듯 카메라를 꾸민다는 뜻의 일본어 着せ替えカメラ(kisekae camera)에서 왔습니다. Kisekame는 그 아이디어를 하나의 짧은 이름으로 담았습니다.",
+  ossTitle: "오픈 소스", ossBody: "KISEKAME는 오픈 소스 소프트웨어입니다. GitHub에서 소스 코드를 확인하고, 문제를 제보하거나 개선에 참여할 수 있습니다.",
   creator: "만든 사람", repository: "소스 저장소", github: "GitHub", twitter: "X / Twitter",
   cameraBody: "KISEKAME는 교체형 드레스업 시트를 사용하는 PENTAX Optio 카메라를 지원합니다. 아래에서 모델별 공식 자료를 확인하세요.", supported: "지원됨",
   rs1500Body: "KISEKAME가 처음 지원한 교체형 전면 시트 카메라입니다.", rs1500Specs: "스킨 크기: 83.65 × 53.35 mm",
@@ -93,7 +96,7 @@ const ko = {
   step3Title: "조정", step3Body: "이미지를 드래그하고 크기를 조절해 원하는 구도를 만드세요.", step4Title: "스킨 저장", step4Body: "‘무료 스킨 받기’를 눌러 완성된 시트를 확인하고 바로 PDF로 저장할 수 있습니다.",
   guidePrintTitle: "정확하게 인쇄하기",
   printBody: "인쇄 배율을 100% 또는 ‘실제 크기’로 설정하세요. 정확한 재단 크기를 위해 ‘페이지에 맞춤’을 끄세요.",
-  printTip1: "① {paper} 용지 사용", printTip2: "② 실제 크기로 인쇄", printTip3: "③ 외곽선을 따라 자르기", printTip4: "④ 부착 전에 크기 확인",
+  printTip1: "① 선택한 크기의 용지 사용", printTip2: "② 실제 크기로 인쇄", printTip3: "③ 외곽선을 따라 자르기", printTip4: "④ 부착 전에 크기 확인",
   uploadLabel: "이미지 업로드", dropHere: "여기에 이미지를 놓으세요", dragDrop: "JPEG, PNG, WebP 또는 HEIC 드래그 앤 드롭",
 };
 
