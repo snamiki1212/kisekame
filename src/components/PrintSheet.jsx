@@ -44,7 +44,7 @@ export function PrintSheet({ camera, paperSize, skins }) {
         <div
           key={pageIndex}
           className={styles.sheet}
-          style={{ width: `${paperSize.widthMm}mm`, height: `${paperSize.heightMm}mm` }}
+          style={{ width: `${paperSize.widthMm}mm`, height: `${paperSize.heightMm - 0.1}mm` }}
         >
           <div
             className={styles.content}
@@ -92,7 +92,10 @@ export function PrintSheet({ camera, paperSize, skins }) {
                 </defs>
                 <g clipPath={`url(#${shapeId})`}>
                   <rect width="100%" height="100%" fill="#fff" />
-                  {image && (
+                  {image?.sourceType === "color" && (
+                    <rect width="100%" height="100%" fill={image.color} />
+                  )}
+                  {image && image.sourceType !== "color" && (
                     <image
                       href={image.src}
                       x={imageX / MM_TO_PX * (panel.shape?.width / panel.widthMm || 1)}
@@ -116,6 +119,7 @@ export function PrintSheet({ camera, paperSize, skins }) {
           );
             })}
           </div>
+          <div className={styles.printBrand} aria-hidden="true">#KISEKAME</div>
         </div>
       ))}
     </div>
