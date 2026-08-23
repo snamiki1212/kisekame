@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CAMERAS, PAPER_SIZES } from "./data/cameras";
-import { STARTER_PATTERNS } from "./data/starterPatterns";
+import { COLOR_TEMPLATES, STARTER_PATTERNS } from "./data/starterPatterns";
 import { SkinCanvas } from "./components/SkinCanvas";
 import { ImageUploader } from "./components/ImageUploader";
 import { getBestPrintLayout, PrintSheet } from "./components/PrintSheet";
@@ -21,8 +21,15 @@ const createStarterPositions = (camera) =>
     ])
   );
 
-const readImageFile = (file) =>
-  new Promise((resolve, reject) => {
+const readImageFile = async (file) => {
+  let readableFile = file;
+  if (/\.hei[cf]$/i.test(file.name) || /image\/hei[cf]/i.test(file.type)) {
+    const { default: heic2any } = await import("heic2any");
+    const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
+    readableFile = Array.isArray(converted) ? converted[0] : converted;
+  }
+
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = reject;
     reader.onload = () => {
@@ -38,8 +45,9 @@ const readImageFile = (file) =>
         });
       preview.src = reader.result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(readableFile);
   });
+};
 
 export default function App() {
   const [cameraId, setCameraId] = useState(CAMERAS[0].id);
@@ -52,15 +60,18 @@ export default function App() {
   );
   const [activePanelId, setActivePanelId] = useState(CAMERAS[0].panels[0].id);
   const [showPrint, setShowPrint] = useState(false);
+  const [sourceTab, setSourceTab] = useState("templates");
 
   const camera = CAMERAS.find((c) => c.id === cameraId);
   const paperSize = PAPER_SIZES.find((p) => p.id === paperId);
   const printLayout = getBestPrintLayout(camera, paperSize);
   const patternCount = images.length * camera.panels.length;
-  const pageCount = Math.max(1, Math.ceil(patternCount / printLayout.capacity));
+  const isFull = patternCount >= printLayout.capacity;
 
   const handleImageUpload = async (files) => {
-    const uploaded = await Promise.all(files.map(readImageFile));
+    const available = Math.max(0, printLayout.capacity - patternCount);
+    const uploaded = await Promise.all(files.slice(0, available).map(readImageFile));
+    if (uploaded.length === 0) return;
     setImages((current) => [...current, ...uploaded]);
     setActiveImageId(uploaded[0].id);
     const panelId = activePanelId ?? camera.panels[0].id;
@@ -76,6 +87,26 @@ export default function App() {
               { ...DEFAULT_IMAGE_POS, imageId: image.id },
             ])
           ),
+        ])
+      ),
+    }));
+  };
+
+  const toggleTemplate = (template) => {
+    const selected = images.some((image) => image.id === template.id);
+    if (selected) {
+      removeImage(template.id);
+      return;
+    }
+    if (isFull) return;
+    setImages((current) => [...current, template]);
+    setActiveImageId(template.id);
+    setImagePositions((current) => ({
+      ...current,
+      [template.id]: Object.fromEntries(
+        camera.panels.map((panel) => [
+          panel.id,
+          { ...DEFAULT_IMAGE_POS, imageId: template.id },
         ])
       ),
     }));
@@ -147,10 +178,10 @@ export default function App() {
               ))}
             </select>
             <div className={styles.printSummary}>
-              <strong>Up to {printLayout.capacity} skins per page</strong>
-              <span>
-                {patternCount} skins · {pageCount} {pageCount === 1 ? "page" : "pages"}
-              </span>
+              <strong>Skins {patternCount} / {printLayout.capacity}</strong>
+              <div className={styles.capacityTrack}>
+                <span style={{ width: `${patternCount / printLayout.capacity * 100}%` }} />
+              </div>
               <span>{printLayout.columns} columns × {printLayout.rows} rows{printLayout.rotated ? " · rotated 90°" : ""}</span>
             </div>
           </div>
@@ -163,7 +194,11 @@ export default function App() {
               className={styles.select}
             >
               {PAPER_SIZES.map((p) => (
-                <option key={p.id} value={p.id}>
+                <option
+                  key={p.id}
+                  value={p.id}
+                  disabled={getBestPrintLayout(camera, p).capacity < patternCount}
+                >
                   {p.label} ({p.widthMm}×{p.heightMm}mm)
                 </option>
               ))}
@@ -171,8 +206,34 @@ export default function App() {
           </div>
 
           <div className={styles.card}>
-            <h2 className={styles.cardTitle}>🖼️ Image Upload</h2>
-            <ImageUploader onUpload={handleImageUpload} />
+            <h2 className={styles.cardTitle}>🎨 Skin Source</h2>
+            <div className={styles.sourceTabs}>
+              <button type="button" className={sourceTab === "templates" ? styles.sourceTabActive : styles.sourceTab} onClick={() => setSourceTab("templates")}>Color templates</button>
+              <button type="button" className={sourceTab === "upload" ? styles.sourceTabActive : styles.sourceTab} onClick={() => setSourceTab("upload")}>Upload</button>
+            </div>
+            {sourceTab === "templates" ? (
+              <div className={styles.colorGrid}>
+                {COLOR_TEMPLATES.map((template) => {
+                  const selected = images.some((image) => image.id === template.id);
+                  return (
+                    <button
+                      key={template.id}
+                      type="button"
+                      className={`${styles.colorSwatch} ${selected ? styles.colorSwatchSelected : ""}`}
+                      style={{ background: template.color }}
+                      onClick={() => toggleTemplate(template)}
+                      disabled={!selected && isFull}
+                      aria-label={`${selected ? "Remove" : "Add"} ${template.name}`}
+                      title={template.name}
+                    >
+                      {selected ? "✓" : "+"}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <ImageUploader onUpload={handleImageUpload} disabled={isFull} />
+            )}
             {images.length > 0 && (
               <div className={styles.imageList} aria-label="Uploaded images">
                 {images.map((image) => (
@@ -262,7 +323,7 @@ export default function App() {
             <span className={styles.previewCount}>{patternCount} patterns</span>
           </div>
           <div className={styles.panelGrid}>
-            {images.flatMap((image) => camera.panels.map((panel) => (
+            {images.flatMap((image, imageIndex) => camera.panels.map((panel) => (
               <div
                 key={`${image.id}-${panel.id}`}
                 className={`${styles.panelWrapper} ${
@@ -275,7 +336,10 @@ export default function App() {
                   setActivePanelId(panel.id);
                 }}
               >
-                <div className={styles.patternName} title={image.name}>{image.name}</div>
+                <div className={styles.patternHeader}>
+                  <strong>Skin {String(imageIndex + 1).padStart(2, "0")}</strong>
+                  <span title={image.name}>{image.name}</span>
+                </div>
                 <SkinCanvas
                   panel={panel}
                   image={image}

@@ -5,13 +5,13 @@ import styles from "./ImageUploader.module.css";
  * ImageUploader handles drag-and-drop and file input upload.
  * Calls onUpload(files) when one or more images are selected.
  */
-export function ImageUploader({ onUpload }) {
+export function ImageUploader({ onUpload, disabled = false }) {
   const [draggingOver, setDraggingOver] = useState(false);
   const inputRef = useRef(null);
 
   const uploadFiles = (fileList) => {
-    const files = Array.from(fileList).filter((file) =>
-      file.type.startsWith("image/")
+    const files = Array.from(fileList).filter(
+      (file) => file.type.startsWith("image/") || /\.hei[cf]$/i.test(file.name)
     );
     if (files.length) onUpload(files);
   };
@@ -29,30 +29,32 @@ export function ImageUploader({ onUpload }) {
 
   return (
     <div
-      className={`${styles.dropzone} ${draggingOver ? styles.active : ""}`}
+      className={`${styles.dropzone} ${draggingOver ? styles.active : ""} ${disabled ? styles.disabled : ""}`}
       onDragOver={(e) => {
+        if (disabled) return;
         e.preventDefault();
         setDraggingOver(true);
       }}
       onDragLeave={() => setDraggingOver(false)}
-      onDrop={handleDrop}
-      onClick={() => inputRef.current?.click()}
+      onDrop={(e) => !disabled && handleDrop(e)}
+      onClick={() => !disabled && inputRef.current?.click()}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
+      onKeyDown={(e) => !disabled && e.key === "Enter" && inputRef.current?.click()}
       aria-label="Upload image"
     >
       <span className={styles.icon}>📷</span>
       <p className={styles.text}>
         {draggingOver
           ? "Drop images here"
-          : "Drag & drop images or click to upload"}
+          : "Drag & drop JPEG, PNG, WebP, or HEIC"}
       </p>
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/*,.heic,.heif"
         multiple
+        disabled={disabled}
         onChange={handleChange}
         className={styles.hidden}
       />

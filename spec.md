@@ -49,6 +49,8 @@ Additional cameras will be added over time. Each camera definition describes tha
 - Each uploaded pattern and panel maintains an independent position and scale.
 - Every uploaded pattern is always visible in the preview; selecting a preview makes its scale control active.
 - Three removable vector starter templates are shown by default so the multi-pattern workflow is visible before upload.
+- Users choose between multi-select solid-colour templates and JPEG, PNG, WebP, HEIC, or HEIF uploads.
+- Skin previews are numbered and displayed in rows of three.
 
 ### 5. Print / PDF Export
 
@@ -76,6 +78,7 @@ Additional cameras will be added over time. Each camera definition describes tha
 - Every uploaded image is treated as an independently adjustable skin pattern.
 - The layout maximizes patterns per sheet (9 RS1500 patterns on A4) and continues overflow onto additional sheets.
 - The paper-size control displays the maximum patterns per page, current pattern count, and required page count before printing.
+- Creation controls stop accepting skins at the selected paper's single-page capacity; paper sizes that cannot hold the current set are disabled.
 
 ---
 
