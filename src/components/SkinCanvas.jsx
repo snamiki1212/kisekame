@@ -19,17 +19,43 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
+    let cancelled = false;
 
     ctx.clearRect(0, 0, width, height);
 
-    // Background
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, width, height);
+    const shape = panel.shape
+      ? new Path2D(panel.shape.path)
+      : new Path2D(`M0 0 H${width} V${height} H0 Z`);
+    const scaleX = panel.shape ? width / panel.shape.width : 1;
+    const scaleY = panel.shape ? height / panel.shape.height : 1;
+
+    const drawShape = (mode) => {
+      ctx.save();
+      if (panel.shape) ctx.scale(scaleX, scaleY);
+      if (mode === "fill") {
+        ctx.fillStyle = "#ffffff";
+        ctx.fill(shape, panel.shape?.fillRule ?? "nonzero");
+      } else {
+        ctx.strokeStyle = "#555";
+        ctx.lineWidth = panel.shape ? 1 / scaleX : 1;
+        ctx.stroke(shape, panel.shape?.fillRule ?? "nonzero");
+      }
+      ctx.restore();
+    };
+
+    drawShape("fill");
 
     // Draw uploaded image if present
     if (image) {
       const img = new Image();
       img.onload = () => {
+        if (cancelled) return;
+        ctx.clearRect(0, 0, width, height);
+        drawShape("fill");
+        ctx.save();
+        if (panel.shape) ctx.scale(scaleX, scaleY);
+        ctx.clip(shape, panel.shape?.fillRule ?? "nonzero");
+        if (panel.shape) ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.drawImage(
           img,
           imagePos.x,
@@ -37,18 +63,12 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange }) {
           img.naturalWidth * imagePos.scale,
           img.naturalHeight * imagePos.scale
         );
-        // Redraw border on top
-        ctx.strokeStyle = "#555";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(0, 0, width, height);
+        ctx.restore();
+        drawShape("stroke");
       };
-      img.src = image;
+      img.src = image.src;
     }
-
-    // Border
-    ctx.strokeStyle = "#555";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(0, 0, width, height);
+    drawShape("stroke");
 
     // Panel label
     ctx.fillStyle = image ? "rgba(0,0,0,0.3)" : "#aaa";
@@ -56,8 +76,11 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange }) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     if (!image) {
-      ctx.fillText(panel.label, width / 2, height / 2);
+      ctx.fillText("Upload artwork", width / 2, height / 2);
     }
+    return () => {
+      cancelled = true;
+    };
   }, [panel, image, imagePos, width, height]);
 
   // Drag-and-drop to reposition image inside canvas
@@ -103,7 +126,7 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange }) {
         onMouseLeave={handleMouseUp}
       />
       <div className={styles.dimensions}>
-        {panel.widthMm}mm × {panel.heightMm}mm
+        {panel.widthMm}mm × {panel.heightMm}mm (cut size)
       </div>
     </div>
   );

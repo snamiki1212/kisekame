@@ -3,29 +3,28 @@ import styles from "./ImageUploader.module.css";
 
 /**
  * ImageUploader handles drag-and-drop and file input upload.
- * Calls onUpload(dataUrl) when an image is selected.
+ * Calls onUpload(files) when one or more images are selected.
  */
 export function ImageUploader({ onUpload }) {
   const [draggingOver, setDraggingOver] = useState(false);
   const inputRef = useRef(null);
 
-  const readFile = (file) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = (e) => onUpload(e.target.result);
-    reader.readAsDataURL(file);
+  const uploadFiles = (fileList) => {
+    const files = Array.from(fileList).filter((file) =>
+      file.type.startsWith("image/")
+    );
+    if (files.length) onUpload(files);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setDraggingOver(false);
-    const file = e.dataTransfer.files[0];
-    readFile(file);
+    uploadFiles(e.dataTransfer.files);
   };
 
   const handleChange = (e) => {
-    const file = e.target.files[0];
-    readFile(file);
+    uploadFiles(e.target.files);
+    e.target.value = "";
   };
 
   return (
@@ -46,13 +45,14 @@ export function ImageUploader({ onUpload }) {
       <span className={styles.icon}>📷</span>
       <p className={styles.text}>
         {draggingOver
-          ? "Drop image here"
-          : "Drag & drop an image or click to upload"}
+          ? "Drop images here"
+          : "Drag & drop images or click to upload"}
       </p>
       <input
         ref={inputRef}
         type="file"
         accept="image/*"
+        multiple
         onChange={handleChange}
         className={styles.hidden}
       />

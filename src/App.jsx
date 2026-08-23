@@ -7,27 +7,69 @@ import styles from "./App.module.css";
 
 const DEFAULT_IMAGE_POS = { x: 0, y: 0, scale: 1 };
 
+const readImageFile = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const preview = new Image();
+      preview.onerror = reject;
+      preview.onload = () =>
+        resolve({
+          id: crypto.randomUUID(),
+          name: file.name,
+          src: reader.result,
+          width: preview.naturalWidth,
+          height: preview.naturalHeight,
+        });
+      preview.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
 export default function App() {
   const [cameraId, setCameraId] = useState(CAMERAS[0].id);
   const [paperId, setPaperId] = useState(PAPER_SIZES[0].id);
-  const [uploadedImage, setUploadedImage] = useState(null);
+  const [images, setImages] = useState([]);
+  const [activeImageId, setActiveImageId] = useState(null);
   // imagePositions: { [panelId]: { x, y, scale } }
   const [imagePositions, setImagePositions] = useState({});
-  const [activePanelId, setActivePanelId] = useState(null);
+  const [activePanelId, setActivePanelId] = useState(CAMERAS[0].panels[0].id);
   const [showPrint, setShowPrint] = useState(false);
 
   const camera = CAMERAS.find((c) => c.id === cameraId);
   const paperSize = PAPER_SIZES.find((p) => p.id === paperId);
 
-  const handleImageUpload = (dataUrl) => {
-    setUploadedImage(dataUrl);
-    // Reset positions for all panels
-    const positions = {};
-    camera.panels.forEach((p) => {
-      positions[p.id] = { ...DEFAULT_IMAGE_POS };
-    });
-    setImagePositions(positions);
-    setActivePanelId(camera.panels[0].id);
+  const handleImageUpload = async (files) => {
+    const uploaded = await Promise.all(files.map(readImageFile));
+    setImages((current) => [...current, ...uploaded]);
+    setActiveImageId(uploaded[0].id);
+    const panelId = activePanelId ?? camera.panels[0].id;
+    setActivePanelId(panelId);
+    setImagePositions((current) => ({
+      ...current,
+      [panelId]: current[panelId]?.imageId
+        ? current[panelId]
+        : { ...DEFAULT_IMAGE_POS, imageId: uploaded[0].id },
+    }));
+  };
+
+  const applyActiveImage = () => {
+    if (!activePanelId || !activeImageId) return;
+    setImagePositions((current) => ({
+      ...current,
+      [activePanelId]: { ...DEFAULT_IMAGE_POS, imageId: activeImageId },
+    }));
+  };
+
+  const removeImage = (imageId) => {
+    setImages((current) => current.filter((image) => image.id !== imageId));
+    setActiveImageId((current) => (current === imageId ? null : current));
+    setImagePositions((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(([, pos]) => pos.imageId !== imageId)
+      )
+    );
   };
 
   const handlePosChange = (panelId, pos) => {
@@ -58,7 +100,12 @@ export default function App() {
             <h2 className={styles.cardTitle}>📷 Camera</h2>
             <select
               value={cameraId}
-              onChange={(e) => setCameraId(e.target.value)}
+              onChange={(e) => {
+                const nextCamera = CAMERAS.find((c) => c.id === e.target.value);
+                setCameraId(e.target.value);
+                setImagePositions({});
+                setActivePanelId(nextCamera.panels[0].id);
+              }}
               className={styles.select}
             >
               {CAMERAS.map((c) => (
@@ -87,26 +134,41 @@ export default function App() {
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>🖼️ Image Upload</h2>
             <ImageUploader onUpload={handleImageUpload} />
-            {uploadedImage && (
-              <div className={styles.uploadedPreview}>
-                <img src={uploadedImage} alt="Uploaded" className={styles.thumbImg} />
-                <button
-                  className={styles.btnSecondary}
-                  onClick={() => {
-                    setUploadedImage(null);
-                    setImagePositions({});
-                    setActivePanelId(null);
-                  }}
-                >
-                  Remove
-                </button>
+            {images.length > 0 && (
+              <div className={styles.imageList} aria-label="Uploaded images">
+                {images.map((image) => (
+                  <div
+                    key={image.id}
+                    className={`${styles.imageItem} ${
+                      activeImageId === image.id ? styles.imageItemActive : ""
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      className={styles.imageSelect}
+                      onClick={() => setActiveImageId(image.id)}
+                      title={image.name}
+                    >
+                      <img src={image.src} alt={image.name} className={styles.thumbImg} />
+                      <span className={styles.imageName}>{image.name}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.removeImage}
+                      onClick={() => removeImage(image.id)}
+                      aria-label={`Remove ${image.name}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
 
-          {uploadedImage && (
+          {images.length > 0 && (
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>🎯 Apply To Panel</h2>
+              <h2 className={styles.cardTitle}>🎯 Apply To Skin</h2>
               <div className={styles.panelPicker}>
                 {camera.panels.map((p) => (
                   <button
@@ -120,6 +182,14 @@ export default function App() {
                   </button>
                 ))}
               </div>
+              <button
+                type="button"
+                className={styles.btnSecondary}
+                onClick={applyActiveImage}
+                disabled={!activeImageId || !activePanelId}
+              >
+                Apply selected image
+              </button>
               {activePanelId && (
                 <div className={styles.scaleControl}>
                   <label htmlFor="scale-input" className={styles.scaleLabel}>
@@ -166,11 +236,13 @@ export default function App() {
                 className={`${styles.panelWrapper} ${
                   activePanelId === panel.id ? styles.panelWrapperActive : ""
                 }`}
-                onClick={() => uploadedImage && setActivePanelId(panel.id)}
+                onClick={() => images.length && setActivePanelId(panel.id)}
               >
                 <SkinCanvas
                   panel={panel}
-                  image={uploadedImage}
+                  image={images.find(
+                    (image) => image.id === imagePositions[panel.id]?.imageId
+                  )}
                   imagePos={
                     imagePositions[panel.id] ?? DEFAULT_IMAGE_POS
                   }
@@ -186,7 +258,7 @@ export default function App() {
               <PrintSheet
                 camera={camera}
                 paperSize={paperSize}
-                imageSrc={uploadedImage}
+                images={images}
                 imagePositions={imagePositions}
               />
             </div>
