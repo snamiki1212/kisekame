@@ -1,0 +1,204 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 16px 24px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  gap: 0;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.card {
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+.select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+  color: #333;
+}
+
+.uploadedPreview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.thumbImg {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.panelPicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.panelBtn {
+  padding: 4px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 12px;
+  background: #fff;
+  transition: all 0.15s;
+}
+
+.panelBtnActive {
+  background: #4a90e2;
+  color: #fff;
+  border-color: #4a90e2;
+}
+
+.scaleControl {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scaleLabel {
+  font-size: 12px;
+  color: #666;
+}
+
+.slider {
+  width: 100%;
+}
+
+.btnPrint {
+  margin-top: 4px;
+  padding: 10px;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.btnPrint:hover {
+  background: #2e2e5e;
+}
+
+.btnSecondary {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #fff;
+}
+
+/* --- Preview --- */
+.preview {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.previewTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.panelGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.panelWrapper {
+  padding: 8px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: border-color 0.15s;
+}
+
+.panelWrapperActive {
+  border-color: #4a90e2;
+}
+
+/* Print area — hidden from screen, visible when printing */
+.printArea {
+  display: none;
+}
+
+@media print {
+  .header,
+  .sidebar {
+    display: none !important;
+  }
+
+  .main {
+    display: block;
+  }
+
+  .preview {
+    padding: 0;
+  }
+
+  .panelGrid {
+    display: none;
+  }
+
+  .printArea {
+    display: block;
+  }
+}
