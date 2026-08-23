@@ -46,14 +46,14 @@ Additional cameras will be added over time. Each camera definition describes tha
 - The active panel can be selected from a panel picker.
 - Within the active panel's canvas, the image can be repositioned via **drag-and-drop** (mouse drag).
 - An image **scale slider** (10%–300%) adjusts the image size within the panel.
-- Each panel maintains an independent position and scale.
+- Each uploaded pattern and panel maintains an independent position and scale.
 
 ### 5. Print / PDF Export
 
 - A "Print / Export PDF" button triggers the browser's native print dialog.
 - The print layout renders a `PrintSheet` component:
-  - Skin panels are tiled across the paper with 10 mm margins and 6 mm gaps.
-  - Panels wrap to new rows when the paper width is exhausted.
+  - All uploaded patterns are tiled across the paper with 10 mm margins and 6 mm gaps.
+  - The layout automatically chooses 0° or 90° orientation for the largest per-page capacity and adds pages as needed.
   - Each panel renders at its exact physical size so the printed skin matches the camera dimensions.
 - The on-screen UI (header, sidebar) is hidden during printing via CSS `@media print`.
 
@@ -71,8 +71,8 @@ Additional cameras will be added over time. Each camera definition describes tha
 
 ### 7. Multiple Skins Per Print
 
-- All skin templates for the selected camera are rendered on the single print sheet.
-- The layout automatically wraps panels to fit the chosen paper size.
+- Every uploaded image is treated as an independently adjustable skin pattern.
+- The layout maximizes patterns per sheet (9 RS1500 patterns on A4) and continues overflow onto additional sheets.
 
 ---
 

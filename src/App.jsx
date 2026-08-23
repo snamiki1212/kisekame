@@ -32,7 +32,7 @@ export default function App() {
   const [paperId, setPaperId] = useState(PAPER_SIZES[0].id);
   const [images, setImages] = useState([]);
   const [activeImageId, setActiveImageId] = useState(null);
-  // imagePositions: { [panelId]: { x, y, scale } }
+  // imagePositions: { [imageId]: { [panelId]: { x, y, scale, imageId } } }
   const [imagePositions, setImagePositions] = useState({});
   const [activePanelId, setActivePanelId] = useState(CAMERAS[0].panels[0].id);
   const [showPrint, setShowPrint] = useState(false);
@@ -48,9 +48,17 @@ export default function App() {
     setActivePanelId(panelId);
     setImagePositions((current) => ({
       ...current,
-      [panelId]: current[panelId]?.imageId
-        ? current[panelId]
-        : { ...DEFAULT_IMAGE_POS, imageId: uploaded[0].id },
+      ...Object.fromEntries(
+        uploaded.map((image) => [
+          image.id,
+          Object.fromEntries(
+            camera.panels.map((panel) => [
+              panel.id,
+              { ...DEFAULT_IMAGE_POS, imageId: image.id },
+            ])
+          ),
+        ])
+      ),
     }));
   };
 
@@ -58,22 +66,32 @@ export default function App() {
     if (!activePanelId || !activeImageId) return;
     setImagePositions((current) => ({
       ...current,
-      [activePanelId]: { ...DEFAULT_IMAGE_POS, imageId: activeImageId },
+      [activeImageId]: {
+        ...current[activeImageId],
+        [activePanelId]: { ...DEFAULT_IMAGE_POS, imageId: activeImageId },
+      },
     }));
   };
 
   const removeImage = (imageId) => {
     setImages((current) => current.filter((image) => image.id !== imageId));
     setActiveImageId((current) => (current === imageId ? null : current));
-    setImagePositions((current) =>
-      Object.fromEntries(
-        Object.entries(current).filter(([, pos]) => pos.imageId !== imageId)
-      )
-    );
+    setImagePositions((current) => {
+      const next = { ...current };
+      delete next[imageId];
+      return next;
+    });
   };
 
   const handlePosChange = (panelId, pos) => {
-    setImagePositions((prev) => ({ ...prev, [panelId]: pos }));
+    if (!activeImageId) return;
+    setImagePositions((prev) => ({
+      ...prev,
+      [activeImageId]: {
+        ...prev[activeImageId],
+        [panelId]: { ...pos, imageId: activeImageId },
+      },
+    }));
   };
 
   const handlePrint = () => {
@@ -194,7 +212,7 @@ export default function App() {
                 <div className={styles.scaleControl}>
                   <label htmlFor="scale-input" className={styles.scaleLabel}>
                     Scale:{" "}
-                    {((imagePositions[activePanelId]?.scale ?? 1) * 100).toFixed(
+                    {((imagePositions[activeImageId]?.[activePanelId]?.scale ?? 1) * 100).toFixed(
                       0
                     )}
                     %
@@ -205,10 +223,10 @@ export default function App() {
                     min="0.1"
                     max="3"
                     step="0.05"
-                    value={imagePositions[activePanelId]?.scale ?? 1}
+                    value={imagePositions[activeImageId]?.[activePanelId]?.scale ?? 1}
                     onChange={(e) =>
                       handlePosChange(activePanelId, {
-                        ...(imagePositions[activePanelId] ?? DEFAULT_IMAGE_POS),
+                        ...(imagePositions[activeImageId]?.[activePanelId] ?? DEFAULT_IMAGE_POS),
                         scale: parseFloat(e.target.value),
                       })
                     }
@@ -240,11 +258,9 @@ export default function App() {
               >
                 <SkinCanvas
                   panel={panel}
-                  image={images.find(
-                    (image) => image.id === imagePositions[panel.id]?.imageId
-                  )}
+                  image={images.find((image) => image.id === activeImageId)}
                   imagePos={
-                    imagePositions[panel.id] ?? DEFAULT_IMAGE_POS
+                    imagePositions[activeImageId]?.[panel.id] ?? DEFAULT_IMAGE_POS
                   }
                   onImagePosChange={(pos) => handlePosChange(panel.id, pos)}
                 />
