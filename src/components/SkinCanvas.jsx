@@ -86,13 +86,6 @@ export const SkinCanvas = memo(function SkinCanvas({ panel, image, imagePos, onI
           ctx.restore();
         }
         drawShape("stroke");
-        if (!image) {
-          ctx.fillStyle = theme === "dark" ? "#91aa98" : "#aaa";
-          ctx.font = "11px system-ui";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("Upload artwork", width / 2, height / 2);
-        }
     };
 
     if (!image) {
@@ -139,7 +132,6 @@ export const SkinCanvas = memo(function SkinCanvas({ panel, image, imagePos, onI
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.label}>{panel.label}</div>
       <canvas
         ref={canvasRef}
         width={width}
