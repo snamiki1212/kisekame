@@ -1,15 +1,26 @@
-import { useRef, useEffect } from "react";
+import { memo, useRef, useEffect, useState } from "react";
 import styles from "./SkinCanvas.module.css";
 
 const MM_TO_PX = 3.78; // 1mm ≈ 3.78px at 96dpi
+const imageCache = new Map();
+
+const getCachedImage = (src) => {
+  if (!imageCache.has(src)) {
+    const image = new Image();
+    image.src = src;
+    imageCache.set(src, image);
+  }
+  return imageCache.get(src);
+};
 
 /**
  * SkinCanvas renders a single skin panel with an optional uploaded image.
  * The image position can be adjusted via drag-and-drop inside the canvas.
  */
-export function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "light" }) {
+export const SkinCanvas = memo(function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "light" }) {
   const canvasRef = useRef(null);
   const draggingRef = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
 
   const width = Math.round(panel.widthMm * MM_TO_PX);
@@ -20,8 +31,6 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let cancelled = false;
-
-    ctx.clearRect(0, 0, width, height);
 
     const shape = panel.shape
       ? new Path2D(panel.shape.path)
@@ -43,40 +52,55 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "
       ctx.restore();
     };
 
-    drawShape("fill");
-
-    // Draw uploaded image if present
-    if (image) {
-      const img = new Image();
-      img.onload = () => {
+    const draw = (img) => {
         if (cancelled) return;
         ctx.clearRect(0, 0, width, height);
         drawShape("fill");
-        ctx.save();
-        if (panel.shape) ctx.scale(scaleX, scaleY);
-        ctx.clip(shape, panel.shape?.fillRule ?? "nonzero");
-        if (panel.shape) ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.drawImage(
-          img,
-          imagePos.x,
-          imagePos.y,
-          img.naturalWidth * imagePos.scale,
-          img.naturalHeight * imagePos.scale
-        );
-        ctx.restore();
+        if (img) {
+          ctx.save();
+          if (panel.shape) ctx.scale(scaleX, scaleY);
+          ctx.clip(shape, panel.shape?.fillRule ?? "nonzero");
+          if (panel.shape) ctx.setTransform(1, 0, 0, 1, 0, 0);
+          const renderScale = imagePos.scale;
+          const tileWidth = img.naturalWidth * renderScale;
+          const tileHeight = img.naturalHeight * renderScale;
+          if (imagePos.repeat !== false && tileWidth > 0 && tileHeight > 0) {
+            const startX = ((imagePos.x % tileWidth) + tileWidth) % tileWidth - tileWidth;
+            const startY = ((imagePos.y % tileHeight) + tileHeight) % tileHeight - tileHeight;
+            for (let x = startX; x < width; x += tileWidth) {
+              for (let y = startY; y < height; y += tileHeight) {
+                ctx.drawImage(img, x, y, tileWidth, tileHeight);
+              }
+            }
+          } else {
+            const centeredX = (width - tileWidth) / 2;
+            const centeredY = (height - tileHeight) / 2;
+            const drawX = image.sourceType === "pattern"
+              ? Math.min(0, Math.max(width - tileWidth, centeredX + imagePos.x))
+              : imagePos.x;
+            const drawY = image.sourceType === "pattern"
+              ? Math.min(0, Math.max(height - tileHeight, centeredY + imagePos.y))
+              : imagePos.y;
+            ctx.drawImage(img, drawX, drawY, tileWidth, tileHeight);
+          }
+          ctx.restore();
+        }
         drawShape("stroke");
-      };
-      img.src = image.src;
-    }
-    drawShape("stroke");
+        if (!image) {
+          ctx.fillStyle = theme === "dark" ? "#91aa98" : "#aaa";
+          ctx.font = "11px system-ui";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("Upload artwork", width / 2, height / 2);
+        }
+    };
 
-    // Panel label
-    ctx.fillStyle = image ? "rgba(0,0,0,0.3)" : (theme === "dark" ? "#91aa98" : "#aaa");
-    ctx.font = "11px system-ui";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
     if (!image) {
-      ctx.fillText("Upload artwork", width / 2, height / 2);
+      draw(null);
+    } else {
+      const img = getCachedImage(image.src);
+      if (img.complete && img.naturalWidth) draw(img);
+      else img.addEventListener("load", () => draw(img), { once: true });
     }
     return () => {
       cancelled = true;
@@ -87,6 +111,7 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "
   const handleMouseDown = (e) => {
     if (!image) return;
     draggingRef.current = true;
+    setIsDragging(true);
     dragStartRef.current = {
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -109,6 +134,7 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "
 
   const handleMouseUp = () => {
     draggingRef.current = false;
+    setIsDragging(false);
   };
 
   return (
@@ -119,7 +145,7 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "
         width={width}
         height={height}
         className={styles.canvas}
-        style={{ cursor: image ? "move" : "default" }}
+        style={{ cursor: image ? (isDragging ? "grabbing" : "grab") : "pointer" }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -130,4 +156,9 @@ export function SkinCanvas({ panel, image, imagePos, onImagePosChange, theme = "
       </div>
     </div>
   );
-}
+}, (previous, next) => (
+  previous.panel === next.panel
+  && previous.image === next.image
+  && previous.imagePos === next.imagePos
+  && previous.theme === next.theme
+));
