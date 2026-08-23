@@ -173,7 +173,7 @@ digicam-skin-designer/
 
 ## Skin Template — PENTAX Optio RS1500
 
-The RS1500 uses one dedicated front skin, not separate front/back/top/bottom panels. Its outer cutting size is 83.65 × 53.35 mm, with lens, flash, and indicator cut-outs traced from Ricoh's official skin PDF.
+The RS1500 uses one dedicated skin. Its outer cutting size is 83.65 × 53.35 mm, with lens, flash, and indicator cut-outs traced from Ricoh's official skin PDF.
 
 ---
 
