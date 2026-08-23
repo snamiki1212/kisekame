@@ -30,7 +30,7 @@ export const CAMERAS = [
     panels: [
       {
         id: "front",
-        label: "Front skin",
+        label: "Skin",
         widthMm: 83.65,
         heightMm: 53.35,
         shape: {
