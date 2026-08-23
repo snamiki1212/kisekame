@@ -22,3 +22,14 @@ official front-skin PDF and stored in `src/data/cameras.js`.
 - The application ships with one camera model and is immediately usable.
 - Additional cameras can define their own number of panels and template shapes.
 - Printouts must use 100% / actual-size scaling to preserve the official dimensions.
+
+## Planned cameras
+
+- **PENTAX Optio RS1000** is supported with an 89 × 53 mm front skin. Its
+  outer cut and six cut-outs are traced from Ricoh's official `color10.pdf`;
+  product pages, the standard sheet collection, and the creator-collaboration
+  sheet page are recorded with the camera definition.
+- **PENTAX Optio LS465** is supported with an approximately 81.3 × 43.63 mm
+  front skin. Its stepped outer cut and lens opening are traced from Ricoh's
+  official `LS465_09.pdf`; Japanese and English product pages and the official
+  sheet collection are recorded with the camera definition.
