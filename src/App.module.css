@@ -872,6 +872,11 @@
 .ossCard > div span { color: var(--ink-muted); font-size: 12px; line-height: 1.6; }
 .ossCard a { grid-column: 1 / -1; justify-self: start; padding: 6px 9px; border-radius: 999px; background: var(--lime-soft); color: var(--ink); font-size: 10px; font-weight: 800; text-decoration: none; }
 .ossCard a:hover { background: var(--pink); color: #fff; }
+.disclaimerCard { display: grid; grid-template-columns: 58px 1fr; gap: 12px; margin-top: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+.disclaimerCard > .aboutIcon { background: var(--pink-soft); }
+.disclaimerCard > div { display: flex; min-width: 0; flex-direction: column; justify-content: center; gap: 5px; }
+.disclaimerCard strong { color: var(--ink); font-size: 14px; }
+.disclaimerCard > div span { color: var(--ink-muted); font-size: 12px; line-height: 1.6; }
 .creatorCard { display: grid; grid-template-columns: 58px 1fr; gap: 12px; margin-top: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
 .creatorCard > img { width: 58px; height: 58px; border: 2px solid var(--ink); border-radius: 16px; object-fit: cover; }
 .creatorCard > div:nth-child(2) { display: flex; flex-direction: column; justify-content: center; gap: 2px; }

@@ -551,6 +551,10 @@ export default function App() {
                 <div><strong>{t("ossTitle")}</strong><span>{t("ossBody")}</span></div>
                 <a href="https://github.com/snamiki1212/kisekame" target="_blank" rel="noreferrer">{t("repository")} ↗</a>
               </div>
+              <div className={styles.disclaimerCard}>
+                <span className={styles.aboutIcon} aria-hidden="true">⚠️</span>
+                <div><strong>{t("disclaimerTitle")}</strong><span>{t("disclaimerBody")}</span></div>
+              </div>
               <div className={styles.creatorCard}>
                 <img src={`${import.meta.env.BASE_URL}snamiki1212-avatar.jpg`} alt="snamiki1212" />
                 <div><span>{t("creator")}</span><strong>snamiki1212</strong></div>
