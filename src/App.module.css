@@ -67,6 +67,21 @@
   color: #333;
 }
 
+.printSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 6px;
+  background: #eef5ff;
+  color: #31577f;
+  font-size: 11px;
+}
+
+.printSummary strong {
+  font-size: 13px;
+}
+
 .imageList {
   display: grid;
   gap: 6px;
@@ -202,6 +217,18 @@
   color: #333;
 }
 
+.previewHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.previewCount {
+  color: #777;
+  font-size: 12px;
+}
+
 .panelGrid {
   display: flex;
   flex-wrap: wrap;
@@ -217,6 +244,25 @@
 
 .panelWrapperActive {
   border-color: #4a90e2;
+}
+
+.patternName {
+  max-width: 316px;
+  margin-bottom: 4px;
+  overflow: hidden;
+  color: #555;
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emptyPreview {
+  padding: 32px;
+  border: 1px dashed #bbb;
+  border-radius: 8px;
+  color: #888;
+  font-size: 13px;
 }
 
 /* Print area — hidden from screen, visible when printing */

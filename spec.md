@@ -47,6 +47,7 @@ Additional cameras will be added over time. Each camera definition describes tha
 - Within the active panel's canvas, the image can be repositioned via **drag-and-drop** (mouse drag).
 - An image **scale slider** (10%–300%) adjusts the image size within the panel.
 - Each uploaded pattern and panel maintains an independent position and scale.
+- Every uploaded pattern is always visible in the preview; selecting a preview makes its scale control active.
 
 ### 5. Print / PDF Export
 
@@ -73,6 +74,7 @@ Additional cameras will be added over time. Each camera definition describes tha
 
 - Every uploaded image is treated as an independently adjustable skin pattern.
 - The layout maximizes patterns per sheet (9 RS1500 patterns on A4) and continues overflow onto additional sheets.
+- The paper-size control displays the maximum patterns per page, current pattern count, and required page count before printing.
 
 ---
 

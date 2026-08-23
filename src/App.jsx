@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CAMERAS, PAPER_SIZES } from "./data/cameras";
 import { SkinCanvas } from "./components/SkinCanvas";
 import { ImageUploader } from "./components/ImageUploader";
-import { PrintSheet } from "./components/PrintSheet";
+import { getBestPrintLayout, PrintSheet } from "./components/PrintSheet";
 import styles from "./App.module.css";
 
 const DEFAULT_IMAGE_POS = { x: 0, y: 0, scale: 1 };
@@ -39,6 +39,9 @@ export default function App() {
 
   const camera = CAMERAS.find((c) => c.id === cameraId);
   const paperSize = PAPER_SIZES.find((p) => p.id === paperId);
+  const printLayout = getBestPrintLayout(camera, paperSize);
+  const patternCount = images.length * camera.panels.length;
+  const pageCount = Math.max(1, Math.ceil(patternCount / printLayout.capacity));
 
   const handleImageUpload = async (files) => {
     const uploaded = await Promise.all(files.map(readImageFile));
@@ -62,20 +65,14 @@ export default function App() {
     }));
   };
 
-  const applyActiveImage = () => {
-    if (!activePanelId || !activeImageId) return;
-    setImagePositions((current) => ({
-      ...current,
-      [activeImageId]: {
-        ...current[activeImageId],
-        [activePanelId]: { ...DEFAULT_IMAGE_POS, imageId: activeImageId },
-      },
-    }));
-  };
-
   const removeImage = (imageId) => {
-    setImages((current) => current.filter((image) => image.id !== imageId));
-    setActiveImageId((current) => (current === imageId ? null : current));
+    setImages((current) => {
+      const next = current.filter((image) => image.id !== imageId);
+      setActiveImageId((activeId) =>
+        activeId === imageId ? (next[0]?.id ?? null) : activeId
+      );
+      return next;
+    });
     setImagePositions((current) => {
       const next = { ...current };
       delete next[imageId];
@@ -83,13 +80,12 @@ export default function App() {
     });
   };
 
-  const handlePosChange = (panelId, pos) => {
-    if (!activeImageId) return;
+  const handlePosChange = (imageId, panelId, pos) => {
     setImagePositions((prev) => ({
       ...prev,
-      [activeImageId]: {
-        ...prev[activeImageId],
-        [panelId]: { ...pos, imageId: activeImageId },
+      [imageId]: {
+        ...prev[imageId],
+        [panelId]: { ...pos, imageId },
       },
     }));
   };
@@ -132,6 +128,13 @@ export default function App() {
                 </option>
               ))}
             </select>
+            <div className={styles.printSummary}>
+              <strong>最大 {printLayout.capacity} skins / page</strong>
+              <span>
+                現在 {patternCount} skins · {pageCount} page
+              </span>
+              <span>{printLayout.columns}列 × {printLayout.rows}段{printLayout.rotated ? "（90°回転）" : ""}</span>
+            </div>
           </div>
 
           <div className={styles.card}>
@@ -186,7 +189,7 @@ export default function App() {
 
           {images.length > 0 && (
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>🎯 Apply To Skin</h2>
+              <h2 className={styles.cardTitle}>🎯 Selected Skin</h2>
               <div className={styles.panelPicker}>
                 {camera.panels.map((p) => (
                   <button
@@ -200,14 +203,6 @@ export default function App() {
                   </button>
                 ))}
               </div>
-              <button
-                type="button"
-                className={styles.btnSecondary}
-                onClick={applyActiveImage}
-                disabled={!activeImageId || !activePanelId}
-              >
-                Apply selected image
-              </button>
               {activePanelId && (
                 <div className={styles.scaleControl}>
                   <label htmlFor="scale-input" className={styles.scaleLabel}>
@@ -225,7 +220,7 @@ export default function App() {
                     step="0.05"
                     value={imagePositions[activeImageId]?.[activePanelId]?.scale ?? 1}
                     onChange={(e) =>
-                      handlePosChange(activePanelId, {
+                      handlePosChange(activeImageId, activePanelId, {
                         ...(imagePositions[activeImageId]?.[activePanelId] ?? DEFAULT_IMAGE_POS),
                         scale: parseFloat(e.target.value),
                       })
@@ -244,28 +239,38 @@ export default function App() {
 
         {/* --- Preview Area --- */}
         <section className={styles.preview}>
-          <h2 className={styles.previewTitle}>
-            Preview — {camera.name}
-          </h2>
+          <div className={styles.previewHeading}>
+            <h2 className={styles.previewTitle}>Front skin previews — {camera.name}</h2>
+            <span className={styles.previewCount}>{patternCount} patterns</span>
+          </div>
           <div className={styles.panelGrid}>
-            {camera.panels.map((panel) => (
+            {images.flatMap((image) => camera.panels.map((panel) => (
               <div
-                key={panel.id}
+                key={`${image.id}-${panel.id}`}
                 className={`${styles.panelWrapper} ${
-                  activePanelId === panel.id ? styles.panelWrapperActive : ""
+                  activePanelId === panel.id && activeImageId === image.id
+                    ? styles.panelWrapperActive
+                    : ""
                 }`}
-                onClick={() => images.length && setActivePanelId(panel.id)}
+                onMouseDown={() => {
+                  setActiveImageId(image.id);
+                  setActivePanelId(panel.id);
+                }}
               >
+                <div className={styles.patternName} title={image.name}>{image.name}</div>
                 <SkinCanvas
                   panel={panel}
-                  image={images.find((image) => image.id === activeImageId)}
+                  image={image}
                   imagePos={
-                    imagePositions[activeImageId]?.[panel.id] ?? DEFAULT_IMAGE_POS
+                    imagePositions[image.id]?.[panel.id] ?? DEFAULT_IMAGE_POS
                   }
-                  onImagePosChange={(pos) => handlePosChange(panel.id, pos)}
+                  onImagePosChange={(pos) => handlePosChange(image.id, panel.id, pos)}
                 />
               </div>
-            ))}
+            )))}
+            {images.length === 0 && (
+              <div className={styles.emptyPreview}>画像をアップロードすると、すべてのFront skinがここに並びます。</div>
+            )}
           </div>
 
           {/* Print layout preview (shown only during print) */}

@@ -4,6 +4,23 @@ const MM_TO_PX = 3.78;
 const MARGIN_MM = 10;
 const GAP_MM = 6;
 
+export function getBestPrintLayout(camera, paperSize) {
+  const panel = camera.panels[0];
+  const usableWidthMm = paperSize.widthMm - MARGIN_MM * 2;
+  const usableHeightMm = paperSize.heightMm - MARGIN_MM * 2;
+  const layouts = [false, true].map((rotated) => {
+    const widthMm = rotated ? panel.heightMm : panel.widthMm;
+    const heightMm = rotated ? panel.widthMm : panel.heightMm;
+    const columns = Math.floor((usableWidthMm + GAP_MM) / (widthMm + GAP_MM));
+    const rows = Math.floor((usableHeightMm + GAP_MM) / (heightMm + GAP_MM));
+    return { rotated, widthMm, heightMm, columns, rows, capacity: columns * rows };
+  });
+
+  return layouts.reduce((best, candidate) =>
+    candidate.capacity > best.capacity ? candidate : best
+  );
+}
+
 /**
  * PrintSheet renders a print-ready layout of multiple skin panels on a single
  * sheet of the chosen paper size. Handles multi-row wrapping.
@@ -12,22 +29,10 @@ export function PrintSheet({ camera, paperSize, images, imagePositions }) {
   const sheetWidth = paperSize.widthMm * MM_TO_PX;
   const sheetHeight = paperSize.heightMm * MM_TO_PX;
   const usableWidthMm = paperSize.widthMm - MARGIN_MM * 2;
-  const usableHeightMm = paperSize.heightMm - MARGIN_MM * 2;
   const usableWidth = usableWidthMm * MM_TO_PX;
   const marginPx = MARGIN_MM * MM_TO_PX;
   const gapPx = GAP_MM * MM_TO_PX;
-  const panel = camera.panels[0];
-
-  const layouts = [false, true].map((rotated) => {
-    const widthMm = rotated ? panel.heightMm : panel.widthMm;
-    const heightMm = rotated ? panel.widthMm : panel.heightMm;
-    const columns = Math.floor((usableWidthMm + GAP_MM) / (widthMm + GAP_MM));
-    const rows = Math.floor((usableHeightMm + GAP_MM) / (heightMm + GAP_MM));
-    return { rotated, widthMm, heightMm, columns, rows, capacity: columns * rows };
-  });
-  const layout = layouts.reduce((best, candidate) =>
-    candidate.capacity > best.capacity ? candidate : best
-  );
+  const layout = getBestPrintLayout(camera, paperSize);
   const patterns = images.flatMap((image) =>
     camera.panels.map((item) => ({ image, panel: item }))
   );
