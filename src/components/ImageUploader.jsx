@@ -5,7 +5,7 @@ import styles from "./ImageUploader.module.css";
  * ImageUploader handles drag-and-drop and file input upload.
  * Calls onUpload(files) when one or more images are selected.
  */
-export function ImageUploader({ onUpload, disabled = false }) {
+export function ImageUploader({ onUpload, labels, disabled = false }) {
   const [draggingOver, setDraggingOver] = useState(false);
   const inputRef = useRef(null);
 
@@ -41,13 +41,13 @@ export function ImageUploader({ onUpload, disabled = false }) {
       role="button"
       tabIndex={0}
       onKeyDown={(e) => !disabled && e.key === "Enter" && inputRef.current?.click()}
-      aria-label="Upload image"
+      aria-label={labels.uploadLabel}
     >
       <span className={styles.icon}>📷</span>
       <p className={styles.text}>
         {draggingOver
-          ? "Drop images here"
-          : "Drag & drop JPEG, PNG, WebP, or HEIC"}
+          ? labels.dropHere
+          : labels.dragDrop}
       </p>
       <input
         ref={inputRef}
