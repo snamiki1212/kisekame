@@ -17,7 +17,7 @@ const en = {
   about: "About", guide: "How to use", menu: "Menu", printGuide: "Print guide", tagline: "Dress up your digicam ✦", share: "Share on X", shareText: "I made a skin for {camera} with KISEKAME!", headerDescription: "Create, preview, and print custom dress-up sheets at actual size for supported PENTAX Optio cameras—right in your browser.", supportedCameras: "Supported cameras",
   light: "Light", dark: "Dark", switchToDark: "Switch to dark mode", switchToLight: "Switch to light mode", camera: "Camera", paperSize: "Paper Size", skins: "Skins", pages: "pages", page: "Page", columns: "columns", rows: "rows", rotated: "rotated 90°",
   selectedSkin: "Selected Skin", skin: "Skin", blankSkin: "Blank skin", randomize: "Randomize", shuffle: "Shuffle", color: "Color", solid: "Solid", pattern: "Pattern", upload: "Upload", design: "Design", mobileTools: "Editing tools",
-  patternColor: "Pattern", background: "Background", scale: "Scale", repeat: "Repeat artwork", printExport: "Print",
+  patternColor: "Pattern", background: "Background", scale: "Scale", repeat: "Repeat artwork", printExport: "Print", printHelpLink: "About printing on mobile", mobilePrintTitle: "Actual-size printing requires a computer", mobilePrintBannerBody: "Design on mobile, then finish and print from a computer. Colors shown are a simulation and may differ from the printed result.", mobilePrintBody: "You can try the designer on your phone, but mobile browsers cannot reliably preserve the exact physical size required for camera skins. Colors shown are a simulation and may differ from the actual camera skin and printed result. Please finish and print your skin from a computer.",
   previews: "Skin previews", selected: "Selected", addSkin: "Add", close: "Close", customColor: "Custom color", comingSoon: "coming soon",
   modalGuide: "KISEKAME GUIDE", aboutTitle: "About KISEKAME", cameraTitle: "Supported cameras", guideTitle: "How to use & print",
   aboutBody: "KISEKAME is a browser-based skin designer for the PENTAX Optio RS1500, RS1000, and LS465. Mix colors, playful patterns, and your own artwork to make printable camera skins for supported models.",
@@ -39,7 +39,7 @@ const en = {
   step3Title: "Adjust it", step3Body: "Drag the artwork and use Scale until the crop feels right.", step4Title: "Print your skin", step4Body: "Select Print to check the finished sheet and save it as a PDF.",
   guidePrintTitle: "Printing accurately",
   printBody: "Print at 100% or “Actual size.” Turn off “Fit to page” so the cutting size stays accurate.",
-  printTip1: "① Use your selected paper size", printTip2: "② Print at actual size", printTip3: "③ Cut along the outline", printTip4: "④ Check the fit before attaching",
+  printTip1: "① Use your selected paper size", printTip2: "② Print at actual size", printTip3: "③ Cut along the outline", printTip4: "④ Check the fit before attaching", printTroubleshootingTitle: "Printing from a mobile device", printTroubleshootingBody: "Mobile printing is not supported because iPhone and other mobile browsers may resize the page automatically. Use KISEKAME on a computer for accurate printing.",
   uploadLabel: "Upload image", dropHere: "Drop images here", dragDrop: "Drag & drop JPEG, PNG, WebP, or HEIC",
 };
 
@@ -47,7 +47,7 @@ const ja = {
   about: "KISEKAMEについて", guide: "使い方", menu: "メニュー", printGuide: "印刷ガイド", tagline: "デジカメを着せ替えよう ✦", share: "Twitterでシェア", shareText: "KISEKAMEで{camera}用のカメラスキンを作りました！", headerDescription: "PENTAX Optio対応モデルの着せ替えシートをブラウザで自由にデザインし、実寸サイズで印刷できます。", supportedCameras: "対応カメラ",
   light: "ライト", dark: "ダーク", switchToDark: "ダークモードに切り替え", switchToLight: "ライトモードに切り替え", camera: "カメラ", paperSize: "用紙サイズ", skins: "スキン", pages: "ページ", page: "Page", columns: "列", rows: "行", rotated: "90°回転",
   selectedSkin: "選択中のスキン", skin: "スキン", blankSkin: "無地のスキン", randomize: "ランダム", shuffle: "シャッフル", color: "カラー", solid: "無地", pattern: "パターン", upload: "画像", design: "デザイン", mobileTools: "編集ツール",
-  patternColor: "パターン", background: "背景", scale: "拡大率", repeat: "画像を繰り返す", printExport: "印刷",
+  patternColor: "パターン", background: "背景", scale: "拡大率", repeat: "画像を繰り返す", printExport: "印刷", printHelpLink: "スマホからの印刷について", mobilePrintTitle: "実寸印刷にはPCが必要です", mobilePrintBannerBody: "スマホでデザインを試し、仕上げと印刷はPCから行ってください。表示色はシミュレーションのため、実際の印刷結果とは異なる場合があります。", mobilePrintBody: "スマホでもデザインを試せますが、モバイルブラウザではカメラスキンの実寸サイズを正確に維持できません。また、表示色はシミュレーションのため、実物や印刷結果とは異なる場合があります。仕上げと印刷はPC版のKISEKAMEから行ってください。",
   previews: "スキンプレビュー", selected: "選択中", addSkin: "追加", close: "閉じる", customColor: "カスタムカラー", comingSoon: "準備中",
   modalGuide: "KISEKAME ガイド", aboutTitle: "KISEKAMEについて", cameraTitle: "対応カメラ", guideTitle: "使い方・印刷ガイド",
   aboutBody: "KISEKAMEは、PENTAX Optio RS1500・RS1000・LS465用のスキンをブラウザでデザインできるサービスです。カラーやパターン、自分の画像を組み合わせて、対応機種の印刷用スキンを作れます。",
@@ -69,7 +69,7 @@ const ja = {
   step3Title: "調整する", step3Body: "画像をドラッグし、拡大率で見え方を整えます。", step4Title: "スキンを印刷する", step4Body: "「印刷」から完成イメージを確認し、そのままPDFで保存できます。",
   guidePrintTitle: "正確に印刷するには",
   printBody: "印刷倍率は100%または「実際のサイズ」を指定してください。「用紙に合わせる」はオフにするとカットサイズを正確に保てます。",
-  printTip1: "① 選択したサイズの用紙を使用", printTip2: "② 実際のサイズで印刷", printTip3: "③ 外周線に沿ってカット", printTip4: "④ 貼る前にサイズを確認",
+  printTip1: "① 選択したサイズの用紙を使用", printTip2: "② 実際のサイズで印刷", printTip3: "③ 外周線に沿ってカット", printTip4: "④ 貼る前にサイズを確認", printTroubleshootingTitle: "スマートフォンからの印刷について", printTroubleshootingBody: "iPhoneなどのモバイルブラウザでは用紙が自動的に拡大・縮小される場合があるため、印刷には対応していません。正確なサイズで印刷するにはPC版のKISEKAMEをご利用ください。",
   uploadLabel: "画像をアップロード", dropHere: "ここに画像をドロップ", dragDrop: "JPEG、PNG、WebP、HEICをドラッグ＆ドロップ",
 };
 
@@ -77,7 +77,7 @@ const ko = {
   about: "KISEKAME 소개", guide: "사용 방법", menu: "메뉴", printGuide: "인쇄 가이드", tagline: "디지털카메라를 꾸며보세요 ✦", share: "X에 공유", shareText: "KISEKAME로 {camera}용 카메라 스킨을 만들었어요!", headerDescription: "지원되는 PENTAX Optio 모델의 드레스업 시트를 브라우저에서 자유롭게 디자인하고 실제 크기로 인쇄할 수 있습니다.", supportedCameras: "지원 카메라",
   light: "라이트", dark: "다크", switchToDark: "다크 모드로 전환", switchToLight: "라이트 모드로 전환", camera: "카메라", paperSize: "용지 크기", skins: "스킨", pages: "페이지", page: "Page", columns: "열", rows: "행", rotated: "90° 회전",
   selectedSkin: "선택한 스킨", skin: "스킨", blankSkin: "빈 스킨", randomize: "랜덤", shuffle: "셔플", color: "컬러", solid: "단색", pattern: "패턴", upload: "이미지", design: "디자인", mobileTools: "편집 도구",
-  patternColor: "패턴", background: "배경", scale: "크기", repeat: "이미지 반복", printExport: "인쇄",
+  patternColor: "패턴", background: "배경", scale: "크기", repeat: "이미지 반복", printExport: "인쇄", printHelpLink: "모바일 인쇄 안내", mobilePrintTitle: "실제 크기 인쇄에는 컴퓨터가 필요합니다", mobilePrintBannerBody: "모바일에서 디자인을 시험하고 마무리와 인쇄는 컴퓨터에서 진행해 주세요. 표시 색상은 시뮬레이션이므로 실제 인쇄 결과와 다를 수 있습니다.", mobilePrintBody: "휴대폰에서도 디자인을 시험해 볼 수 있지만 모바일 브라우저에서는 카메라 스킨의 실제 크기를 정확히 유지할 수 없습니다. 표시 색상은 시뮬레이션이므로 실제 스킨 및 인쇄 결과와 다를 수 있습니다. 마무리와 인쇄는 컴퓨터에서 KISEKAME를 이용해 주세요.",
   previews: "스킨 미리보기", selected: "선택됨", addSkin: "추가", close: "닫기", customColor: "사용자 컬러", comingSoon: "준비 중",
   modalGuide: "KISEKAME 가이드", aboutTitle: "KISEKAME 소개", cameraTitle: "지원 카메라", guideTitle: "사용 및 인쇄 방법",
   aboutBody: "KISEKAME는 PENTAX Optio RS1500, RS1000, LS465용 스킨을 브라우저에서 디자인하는 서비스입니다. 컬러, 패턴, 직접 올린 이미지를 조합해 지원 모델의 인쇄용 카메라 스킨을 만들 수 있습니다.",
@@ -99,7 +99,7 @@ const ko = {
   step3Title: "조정", step3Body: "이미지를 드래그하고 크기를 조절해 원하는 구도를 만드세요.", step4Title: "스킨 인쇄", step4Body: "‘인쇄’를 눌러 완성된 시트를 확인하고 바로 PDF로 저장할 수 있습니다.",
   guidePrintTitle: "정확하게 인쇄하기",
   printBody: "인쇄 배율을 100% 또는 ‘실제 크기’로 설정하세요. 정확한 재단 크기를 위해 ‘페이지에 맞춤’을 끄세요.",
-  printTip1: "① 선택한 크기의 용지 사용", printTip2: "② 실제 크기로 인쇄", printTip3: "③ 외곽선을 따라 자르기", printTip4: "④ 부착 전에 크기 확인",
+  printTip1: "① 선택한 크기의 용지 사용", printTip2: "② 실제 크기로 인쇄", printTip3: "③ 외곽선을 따라 자르기", printTip4: "④ 부착 전에 크기 확인", printTroubleshootingTitle: "모바일 기기에서 인쇄하기", printTroubleshootingBody: "iPhone 등의 모바일 브라우저에서는 용지가 자동으로 확대 또는 축소될 수 있어 인쇄를 지원하지 않습니다. 정확한 크기로 인쇄하려면 컴퓨터에서 KISEKAME를 이용해 주세요.",
   uploadLabel: "이미지 업로드", dropHere: "여기에 이미지를 놓으세요", dragDrop: "JPEG, PNG, WebP 또는 HEIC 드래그 앤 드롭",
 };
 
