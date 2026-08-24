@@ -30,8 +30,9 @@
 
 .mobileNav { display: none; }
 .mobileSkinRail { display: none; }
-.mobileMenuButton, .mobileMenuBackdrop { display: none; }
+.mobileMenuButton, .mobileMenuBackdrop, .mobilePrintNoticeBackdrop { display: none; }
 .mobilePrintTitle { display: none; }
+.mobilePrintBanner { display: none; }
 
 /* --- Sidebar --- */
 .sidebar {
@@ -527,6 +528,8 @@
   opacity: 0.4;
 }
 
+.printHelpButton { display: none; }
+
 .btnSecondary {
   padding: 4px 10px;
   border: 1px solid #ccc;
@@ -895,6 +898,9 @@
 .guidePrintSection p { color: var(--ink-muted); font-size: 12px; line-height: 1.6; }
 .printTips { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 14px; }
 .printTips span { padding: 14px; border-radius: 12px; background: var(--lime-soft); font-size: 12px; font-weight: 800; }
+.printTroubleshooting { margin-top: 16px; padding: 14px; border: 1px solid color-mix(in srgb, var(--pink) 35%, var(--border)); border-radius: 14px; background: var(--pink-soft); }
+.printTroubleshooting strong { display: block; margin-bottom: 6px; color: var(--pink); font-size: 12px; }
+.printTroubleshooting p { color: var(--ink); font-size: 11px; line-height: 1.6; }
 .infoModalFooter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; border-top: 1px solid var(--border); }
 .infoModalFooter button { min-width: 0; padding: 9px 5px; border: 0; border-radius: 9px; background: transparent; color: var(--ink-muted); font-size: 10px; font-weight: 800; }
 .infoModalFooter button.infoPageActive { background: var(--pink); color: #fff; }
@@ -950,8 +956,14 @@
   .main[data-mobile-tab="print"] .printDock { order: 2; margin-top: 4px; }
   .mobilePrintTitle { display: none; color: var(--ink); font-size: 18px; font-weight: 850; }
   .main[data-mobile-tab="print"] .mobilePrintTitle { display: block; }
+  .main[data-mobile-tab="print"] .mobilePrintBanner { position: relative; display: grid; grid-template-columns: 34px 1fr 26px; gap: 9px; align-items: start; padding: 12px; border: 1px solid color-mix(in srgb, var(--pink) 35%, var(--border)); border-radius: 15px; background: var(--pink-soft); }
+  .mobilePrintBanner > span { font-size: 24px; }
+  .mobilePrintBanner strong { color: var(--pink); font-size: 11px; }
+  .mobilePrintBanner p { margin-top: 3px; color: var(--ink); font-size: 10px; line-height: 1.5; }
+  .mobilePrintBanner > button { display: grid; width: 26px; height: 26px; place-items: center; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--surface-raised) 70%, transparent); color: var(--ink-muted); font-size: 17px; }
   .panelGrid .pageDivider { display: none; }
   .printDock { position: static; width: 100%; margin: 6px 0 0; padding: 0; border: 0; background: transparent; }
+  .printHelpButton { display: block; width: 100%; padding: 12px 4px 2px; border: 0; background: transparent; color: var(--ink-muted); font-size: 11px; font-weight: 750; text-align: center; text-decoration: underline; text-underline-offset: 3px; }
   .sourceTab, .sourceTabActive, .select { min-height: 44px; }
   .skinSelect { display: none; }
   .sourceTabs { display: none; }
@@ -984,6 +996,12 @@
   .mobileMenu strong { padding: 5px 8px 9px; color: var(--pink); font-size: 11px; letter-spacing: .12em; }
   .mobileMenu button { min-height: 46px; padding: 10px 12px; border: 0; border-radius: 12px; background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 750; text-align: left; }
   .mobileMenu button:hover, .mobileMenu button:active { background: var(--pink-soft); color: var(--pink); }
+  .mobilePrintNoticeBackdrop { position: fixed; z-index: 55; inset: 0; display: grid; place-items: center; padding: 18px; background: #03140db8; backdrop-filter: blur(6px); }
+  .mobilePrintNotice { display: flex; width: min(360px, 100%); flex-direction: column; align-items: center; padding: 24px 20px 18px; border: 2px solid var(--ink); border-radius: 22px; background: var(--surface-raised); color: var(--ink); text-align: center; box-shadow: 6px 6px 0 var(--pink); }
+  .mobilePrintNotice > span { font-size: 36px; }
+  .mobilePrintNotice h2 { margin-top: 10px; font-size: 19px; }
+  .mobilePrintNotice p { margin-top: 10px; color: var(--ink-muted); font-size: 12px; line-height: 1.7; }
+  .mobilePrintNotice button { width: 100%; min-height: 46px; margin-top: 18px; border: 0; border-radius: 13px; background: var(--pink); color: #fff; font-size: 13px; font-weight: 850; }
 }
 
 @media (max-width: 400px) {
@@ -991,7 +1009,7 @@
 }
 
 @media print {
-  .header, .sidebar, .mobileNav, .mobileMenuBackdrop, .footer { display: none !important; }
+  .header, .sidebar, .mobileNav, .mobileMenuBackdrop, .mobilePrintNoticeBackdrop, .footer { display: none !important; }
   .app { display: block; min-height: 0; background: #fff; }
   .main { display: block; min-height: 0; padding: 0; }
   .preview { display: block; padding: 0; gap: 0; overflow: visible; }

@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { CAMERAS, PAPER_SIZES } from "./data/cameras";
 import {
   COLOR_TEMPLATES,
@@ -144,8 +145,10 @@ export default function App() {
   const [patternForeground, setPatternForeground] = useState(KISEKAME_PINK);
   const [patternBackground, setPatternBackground] = useState("#ffe7f1");
   const [showPrint, setShowPrint] = useState(false);
-  const [mobileTab, setMobileTab] = useState("design");
+  const [mobileTab, setMobileTab] = useState("print");
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showMobilePrintNotice, setShowMobilePrintNotice] = useState(false);
+  const [showMobilePrintBanner, setShowMobilePrintBanner] = useState(false);
   const mobileCarouselRef = useRef(null);
   const mobileRailRef = useRef(null);
   const mobileEditorRef = useRef(null);
@@ -162,6 +165,14 @@ export default function App() {
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 520px)").matches) return;
+    const noticeKey = "kisekame-mobile-print-notice-seen-v2";
+    if (sessionStorage.getItem(noticeKey)) return;
+    sessionStorage.setItem(noticeKey, "true");
+    setShowMobilePrintBanner(true);
+  }, []);
 
   useEffect(() => {
     const syncInfoPage = () => {
@@ -287,11 +298,13 @@ export default function App() {
   };
 
   const handlePrint = () => {
-    setShowPrint(true);
-    setTimeout(() => {
-      window.print();
-      setShowPrint(false);
-    }, 300);
+    if (window.matchMedia("(max-width: 520px)").matches) {
+      setShowMobilePrintNotice(true);
+      return;
+    }
+    flushSync(() => setShowPrint(true));
+    window.addEventListener("afterprint", () => setShowPrint(false), { once: true });
+    window.print();
   };
 
   const activateSkin = (skin) => {
@@ -408,9 +421,15 @@ export default function App() {
         <section className={styles.sidebar} ref={mobileEditorRef}>
           <div className={styles.printDock}>
             <button className={styles.btnPrint} onClick={handlePrint} disabled={skins.length === 0}>🖨️ {t("printExport")}</button>
+            <button type="button" className={styles.printHelpButton} onClick={() => openInfoPage("guide")}>ⓘ {t("printHelpLink")}</button>
           </div>
           <div className={styles.sidebarContent}>
           <h2 className={styles.mobilePrintTitle}>{t("printExport")}</h2>
+          {showMobilePrintBanner && <aside className={styles.mobilePrintBanner}>
+            <span aria-hidden="true">🖥️</span>
+            <div><strong>{t("mobilePrintTitle")}</strong><p>{t("mobilePrintBannerBody")}</p></div>
+            <button type="button" onClick={() => setShowMobilePrintBanner(false)} aria-label={t("close")}>×</button>
+          </aside>}
           <section className={`${styles.printSummary} ${styles.printSettings}`} aria-label={`${skins.length} ${t("skins")}, ${pageCount} ${t("pages")}`}>
             <strong>{skins.length} {t("skins")} · {pageCount} {t("pages")}</strong>
             <div className={styles.capacityTrack}><span style={{ width: `${currentPageSkinCount / printLayout.capacity * 100}%` }} /></div>
@@ -574,8 +593,8 @@ export default function App() {
       <nav className={styles.mobileNav} aria-label={t("mobileTools")}>
         {[
           ["design", "✦", t("design")],
-          ["image", "▧", t("upload")],
           ["print", "⌑", t("printExport")],
+          ["image", "▧", t("upload")],
         ].map(([id, icon, label]) => <button
           key={id}
           type="button"
@@ -591,6 +610,17 @@ export default function App() {
       </nav>
 
       <footer className={styles.footer}>© 2026 snamiki1212</footer>
+
+      {showMobilePrintNotice && <div className={styles.mobilePrintNoticeBackdrop} onMouseDown={(event) => {
+        if (event.target === event.currentTarget) setShowMobilePrintNotice(false);
+      }}>
+        <section className={styles.mobilePrintNotice} role="alertdialog" aria-modal="true" aria-labelledby="mobile-print-notice-title">
+          <span aria-hidden="true">🖥️</span>
+          <h2 id="mobile-print-notice-title">{t("mobilePrintTitle")}</h2>
+          <p>{t("mobilePrintBody")}</p>
+          <button type="button" onClick={() => setShowMobilePrintNotice(false)}>{t("close")}</button>
+        </section>
+      </div>}
 
       {infoPage && <div className={styles.modalBackdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) closeInfoPage(); }}>
         <section className={styles.infoModal} role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
@@ -658,6 +688,10 @@ export default function App() {
               <h3>{t("guidePrintTitle")}</h3>
               <p>{t("printBody")}</p>
               <div className={styles.printTips}><span>{t("printTip1")}</span><span>{t("printTip2")}</span><span>{t("printTip3")}</span><span>{t("printTip4")}</span></div>
+              <div className={styles.printTroubleshooting}>
+                <strong>{t("printTroubleshootingTitle")}</strong>
+                <p>{t("printTroubleshootingBody")}</p>
+              </div>
             </section>}
           </div>
           <div className={styles.infoModalFooter}>
