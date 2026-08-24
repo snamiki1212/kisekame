@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { CAMERAS, PAPER_SIZES } from "./data/cameras";
 import {
   COLOR_TEMPLATES,
@@ -144,6 +144,11 @@ export default function App() {
   const [patternForeground, setPatternForeground] = useState(KISEKAME_PINK);
   const [patternBackground, setPatternBackground] = useState("#ffe7f1");
   const [showPrint, setShowPrint] = useState(false);
+  const [mobileTab, setMobileTab] = useState("design");
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const mobileCarouselRef = useRef(null);
+  const mobileRailRef = useRef(null);
+  const mobileEditorRef = useRef(null);
   const [infoPage, setInfoPage] = useState(() => {
     const page = new URLSearchParams(window.location.search).get("page");
     const normalizedPage = normalizeInfoPage(page);
@@ -182,6 +187,20 @@ export default function App() {
     ? t("solid")
     : (asset?.name ?? t("blankSkin"));
 
+  useEffect(() => {
+    if (!activeSkin || window.innerWidth > 520) return;
+    const centerItem = (container, selector) => {
+      const item = container?.querySelector(selector);
+      if (!container || !item) return;
+      container.scrollTo({
+        left: item.offsetLeft - (container.clientWidth - item.offsetWidth) / 2,
+        behavior: "smooth",
+      });
+    };
+    centerItem(mobileCarouselRef.current, `[data-skin-id="${activeSkin.id}"]`);
+    centerItem(mobileRailRef.current, `[data-skin-chip-id="${activeSkin.id}"]`);
+  }, [activeSkin?.id]);
+
   const assignAsset = (asset) => {
     if (!activeSkin) return;
     setSkins((current) => current.map((skin) =>
@@ -215,26 +234,6 @@ export default function App() {
     setPatternForeground(asset.foreground);
     setPatternBackground(asset.background);
     assignGeneratedAsset(asset);
-  };
-
-  const randomizeAllSkins = () => {
-    const generatedAssets = [];
-    const assignments = skins.map((skin) => {
-      const asset = createRandomAsset();
-      if (asset.sourceType === "pattern") generatedAssets.push(asset);
-      return { skin, asset };
-    });
-
-    setCustomAssets((current) => [
-      ...new Map([...current, ...generatedAssets].map((asset) => [asset.id, asset])).values(),
-    ]);
-    setSkins(assignments.map(({ skin, asset }) => ({ ...skin, assetId: asset.id })));
-    setImagePositions(Object.fromEntries(assignments.map(({ skin, asset }) => [
-      skin.id,
-      Object.fromEntries(camera.panels.map((panel) => [
-        panel.id, { ...getDefaultImagePos(asset), imageId: asset.id },
-      ])),
-    ])));
   };
 
   const handleImageUpload = async (files) => {
@@ -303,7 +302,10 @@ export default function App() {
       setPatternForeground(asset.foreground);
       setPatternBackground(asset.background);
     }
-    if (asset?.sourceType) setSourceTab(asset.sourceType === "upload" ? "upload" : "pattern");
+    if (asset?.sourceType) {
+      const mobileSource = mobileTab === "image" ? "upload" : "pattern";
+      setSourceTab(window.innerWidth <= 520 ? mobileSource : (asset.sourceType === "upload" ? "upload" : "pattern"));
+    }
   };
 
   const selectedAssetId = activeSkin?.assetId;
@@ -368,6 +370,7 @@ export default function App() {
           </div>
         </section>
         <div className={styles.headerActions}>
+          <button type="button" className={styles.mobileMenuButton} onClick={() => setShowMobileMenu((current) => !current)} aria-label={t("menu")} aria-expanded={showMobileMenu}>☰</button>
           <nav className={styles.infoNav} aria-label="Information">
             <button type="button" onClick={() => openInfoPage("about")}>{t("about")}</button>
             <button type="button" onClick={() => openInfoPage("camera")}>{t("camera")}</button>
@@ -389,19 +392,32 @@ export default function App() {
         </div>
       </header>
 
-      <main className={styles.main}>
-        <section className={styles.sidebar}>
+      {showMobileMenu && <div className={styles.mobileMenuBackdrop} onMouseDown={(event) => {
+        if (event.target === event.currentTarget) setShowMobileMenu(false);
+      }}>
+        <nav className={styles.mobileMenu} aria-label={t("menu")}>
+          <strong>KISEKAME</strong>
+          <button type="button" onClick={() => { setShowMobileMenu(false); openInfoPage("about"); }}>ⓘ {t("about")}</button>
+          <button type="button" onClick={() => { setShowMobileMenu(false); openInfoPage("camera"); }}>📷 {t("camera")}</button>
+          <button type="button" onClick={() => { setShowMobileMenu(false); openInfoPage("guide"); }}>? {t("guide")}</button>
+          <button type="button" onClick={() => { setShowMobileMenu(false); handleShare(); }}>↗ {t("share")}</button>
+        </nav>
+      </div>}
+
+      <main className={styles.main} data-mobile-tab={mobileTab}>
+        <section className={styles.sidebar} ref={mobileEditorRef}>
           <div className={styles.printDock}>
             <button className={styles.btnPrint} onClick={handlePrint} disabled={skins.length === 0}>🖨️ {t("printExport")}</button>
           </div>
           <div className={styles.sidebarContent}>
-          <section className={styles.printSummary} aria-label={`${skins.length} ${t("skins")}, ${pageCount} ${t("pages")}`}>
+          <h2 className={styles.mobilePrintTitle}>{t("printExport")}</h2>
+          <section className={`${styles.printSummary} ${styles.printSettings}`} aria-label={`${skins.length} ${t("skins")}, ${pageCount} ${t("pages")}`}>
             <strong>{skins.length} {t("skins")} · {pageCount} {t("pages")}</strong>
             <div className={styles.capacityTrack}><span style={{ width: `${currentPageSkinCount / printLayout.capacity * 100}%` }} /></div>
             <span>{printLayout.columns} {t("columns")} × {printLayout.rows} {t("rows")}{printLayout.rotated ? ` · ${t("rotated")}` : ""}</span>
           </section>
 
-          <div className={styles.card}>
+          <div className={`${styles.card} ${styles.cameraCard}`}>
             <h2 className={styles.cardTitle}>📷 {t("camera")}</h2>
             <select value={cameraId} onChange={(event) => {
               const nextCamera = CAMERAS.find((item) => item.id === event.target.value);
@@ -415,7 +431,7 @@ export default function App() {
             </select>
           </div>
 
-          <div className={styles.card}>
+          <div className={`${styles.card} ${styles.paperCard}`}>
             <h2 className={styles.cardTitle}>📄 {t("paperSize")}</h2>
             <select value={paperId} onChange={(event) => setPaperId(event.target.value)} className={styles.select}>
               {PAPER_SIZES.map((item) => (
@@ -427,7 +443,7 @@ export default function App() {
           </div>
 
           {activeSkin && (
-            <div className={styles.card}>
+            <div className={`${styles.card} ${styles.designCard}`}>
               <div className={styles.selectedSkinHeading}>
                 <h2 className={styles.cardTitle}>🎨 {t("selectedSkin")}</h2>
                 <button type="button" className={styles.randomizeButton} onClick={randomizeActiveSkin}>✦ {t("shuffle")}</button>
@@ -516,11 +532,22 @@ export default function App() {
         <section className={styles.preview}>
           <div className={styles.previewHeading}>
             <h2 className={styles.previewTitle}>{t("previews")} — {camera.name}</h2>
-            <div className={styles.previewActions}>
-              <button type="button" className={styles.randomizeAllButton} onClick={randomizeAllSkins} disabled={skins.length === 0}>✦ {t("randomizeAll")}</button>
-            </div>
           </div>
-          <div className={styles.panelGrid}>
+          <div className={styles.mobileSkinRail} ref={mobileRailRef} aria-label={t("skins")}>
+            {skins.map((skin, index) => {
+              const isActive = activeSkin?.id === skin.id;
+              return <button
+                key={skin.id}
+                type="button"
+                data-skin-chip-id={skin.id}
+                className={isActive ? styles.mobileSkinChipActive : styles.mobileSkinChip}
+                aria-pressed={isActive}
+                onClick={() => activateSkin(skin)}
+              ><span>{String(index + 1).padStart(2, "0")}</span><b>{getSkinName(getAsset(skin.assetId))}</b></button>;
+            })}
+            <button type="button" className={styles.mobileAddSkin} onClick={addSkin} aria-label={t("addSkin")}>＋</button>
+          </div>
+          <div className={styles.panelGrid} ref={mobileCarouselRef}>
             {skins.map((skin, index) => {
               const asset = getAsset(skin.assetId);
               const panel = camera.panels[0];
@@ -528,7 +555,7 @@ export default function App() {
               const startsPage = index > 0 && index % printLayout.capacity === 0;
               return <Fragment key={skin.id}>
                 {startsPage && <div className={styles.pageDivider}><span>{t("page")} {Math.floor(index / printLayout.capacity) + 1}</span></div>}
-                <div className={`${styles.panelWrapper} ${isActive ? styles.panelWrapperActive : ""}`} onMouseDown={() => activateSkin(skin)} aria-current={isActive ? "true" : undefined}>
+                <div data-skin-id={skin.id} className={`${styles.panelWrapper} ${isActive ? styles.panelWrapperActive : ""}`} onMouseDown={() => activateSkin(skin)} aria-current={isActive ? "true" : undefined}>
                   <div className={styles.patternHeader}><SkinIdentity label={`${t("skin")} ${String(index + 1).padStart(2, "0")}`} name={getSkinName(asset)} selected={isActive} /><button type="button" className={styles.removeSkin} onClick={(event) => { event.stopPropagation(); removeSkin(skin.id); }} aria-label={`Remove Skin ${index + 1}`}>×</button></div>
                   <SkinCanvas theme={theme} panel={panel} image={asset} imagePos={imagePositions[skin.id]?.[panel.id] ?? getDefaultImagePos(asset)} onImagePosChange={(pos) => handlePosChange(skin.id, panel.id, { ...pos, imageId: skin.assetId })} />
                 </div>
@@ -543,6 +570,25 @@ export default function App() {
           {showPrint && <div className={styles.printArea}><PrintSheet camera={camera} paperSize={paperSize} skins={skins.map((skin) => ({ ...skin, image: getAsset(skin.assetId), positions: imagePositions[skin.id] }))} /></div>}
         </section>
       </main>
+
+      <nav className={styles.mobileNav} aria-label={t("mobileTools")}>
+        {[
+          ["design", "✦", t("design")],
+          ["image", "▧", t("upload")],
+          ["print", "⌑", t("printExport")],
+        ].map(([id, icon, label]) => <button
+          key={id}
+          type="button"
+          className={mobileTab === id ? styles.mobileNavActive : ""}
+          aria-current={mobileTab === id ? "page" : undefined}
+          onClick={() => {
+            setMobileTab(id);
+            if (id === "design") setSourceTab("pattern");
+            if (id === "image") setSourceTab("upload");
+            requestAnimationFrame(() => mobileEditorRef.current?.scrollTo({ top: 0, behavior: "smooth" }));
+          }}
+        ><span aria-hidden="true">{icon}</span>{label}</button>)}
+      </nav>
 
       <footer className={styles.footer}>© 2026 snamiki1212</footer>
 
