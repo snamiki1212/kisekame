@@ -101,10 +101,11 @@ export const SkinCanvas = memo(function SkinCanvas({ panel, image, imagePos, onI
   }, [panel, image, imagePos, theme, width, height]);
 
   // Drag-and-drop to reposition image inside canvas
-  const handleMouseDown = (e) => {
+  const handlePointerDown = (e) => {
     if (!image) return;
     draggingRef.current = true;
     setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
     dragStartRef.current = {
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -114,10 +115,13 @@ export const SkinCanvas = memo(function SkinCanvas({ panel, image, imagePos, onI
     e.preventDefault();
   };
 
-  const handleMouseMove = (e) => {
+  const handlePointerMove = (e) => {
     if (!draggingRef.current) return;
-    const dx = e.clientX - dragStartRef.current.mouseX;
-    const dy = e.clientY - dragStartRef.current.mouseY;
+    const bounds = e.currentTarget.getBoundingClientRect();
+    const scaleX = width / bounds.width;
+    const scaleY = height / bounds.height;
+    const dx = (e.clientX - dragStartRef.current.mouseX) * scaleX;
+    const dy = (e.clientY - dragStartRef.current.mouseY) * scaleY;
     onImagePosChange({
       ...imagePos,
       x: dragStartRef.current.origX + dx,
@@ -125,9 +129,12 @@ export const SkinCanvas = memo(function SkinCanvas({ panel, image, imagePos, onI
     });
   };
 
-  const handleMouseUp = () => {
+  const handlePointerUp = (e) => {
     draggingRef.current = false;
     setIsDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   };
 
   return (
@@ -138,10 +145,10 @@ export const SkinCanvas = memo(function SkinCanvas({ panel, image, imagePos, onI
         height={height}
         className={styles.canvas}
         style={{ cursor: image ? (isDragging ? "grabbing" : "grab") : "pointer" }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       />
       <div className={styles.dimensions}>
         {panel.widthMm}mm × {panel.heightMm}mm (cut size)
